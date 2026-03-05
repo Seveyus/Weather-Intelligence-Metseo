@@ -1,0 +1,6 @@
+/.venv
+*.csv
+.venv/
+__pycache__/
+H_42_latest-2025-2026.csv
+H_42_previous-2020-2024.csv
