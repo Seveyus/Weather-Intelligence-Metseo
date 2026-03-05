@@ -1,0 +1,13 @@
+PS C:\Users\yoyof\OneDrive\Bureau\AI_m-t-o> python train.py      
+epoch 0 loss 43.208560943603516
+epoch 1 loss 31.31545639038086
+epoch 2 loss 27.364938735961914
+epoch 3 loss 23.016754150390625
+epoch 4 loss 20.937763214111328
+epoch 5 loss 33.16998291015625
+epoch 6 loss 24.648876190185547
+epoch 7 loss 32.551513671875
+epoch 8 loss 26.90190315246582
+epoch 9 loss 27.488704681396484
+
+
