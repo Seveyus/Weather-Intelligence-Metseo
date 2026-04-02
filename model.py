@@ -11,14 +11,12 @@ class GRURegressor(nn.Module):
             batch_first=True
         )
 
-        self.fc = nn.Linear(hidden_size, 1)
+        # Sortie de taille 2 pour (wind_u, wind_v)
+        self.fc = nn.Linear(hidden_size, 2)
 
     def forward(self, x):
         out, _ = self.gru(x)
-
+        # On prend le dernier état caché de la séquence
         last = out[:, -1, :]
-
         out = self.fc(last)
-
-        return out.squeeze(1)
-
+        return out # Shape: [batch, 2]
