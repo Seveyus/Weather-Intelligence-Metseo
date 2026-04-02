@@ -1,0 +1,29 @@
+{
+  "best_val_loss": 0.31660784780979156,
+  "test_loss_scaled_uv": 0.3039618134498596,
+  "test_mae_ff_kmh": 2.6698336601257324,
+  "test_rmse_ff_kmh": 3.534773111343384,
+  "baseline_mae_ff_kmh": 2.698847532272339,
+  "baseline_rmse_ff_kmh": 3.6063899993896484,
+  "config": {
+    "data_path": "dataset_clean.csv",
+    "window": 24,
+    "horizon": 1,
+    "batch_size": 2048,
+    "epochs": 60,
+    "lr": 0.001,
+    "weight_decay": 1e-05,
+    "hidden_size": 128,
+    "num_layers": 2,
+    "dropout": 0.2,
+    "bidirectional": true,
+    "grad_clip": 1.0,
+    "patience": 10,
+    "num_workers": 4,
+    "seed": 42,
+    "checkpoint_dir": "checkpoints",
+    "model_name": "gru_wind_best.pth",
+    "preferred_cuda_index": 1
+  },
+  "device": "cuda:1"
+}
