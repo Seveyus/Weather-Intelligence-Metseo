@@ -1,0 +1,437 @@
+{
+  "24": {
+    "blend": {
+      "residual HGB7": 0.5,
+      "direct HGB15": 0.5
+    },
+    "validation_scores": {
+      "Persistence": {
+        "mae_kmh": 4.69645460160593,
+        "rmse_kmh": 6.131535471563093,
+        "bias_kmh": -0.003335392217418155,
+        "n": 6476
+      },
+      "Seasonal mean": {
+        "mae_kmh": 3.6597454499061017,
+        "rmse_kmh": 4.707301761144961,
+        "bias_kmh": 0.2716098288826745,
+        "n": 6476
+      },
+      "NWP ecmwf_ifs025": {
+        "mae_kmh": 3.848125385194373,
+        "rmse_kmh": 4.850895708739574,
+        "bias_kmh": -0.20604386187726303,
+        "n": 6476
+      },
+      "NWP gfs_global": {
+        "mae_kmh": 3.578631257411136,
+        "rmse_kmh": 4.712757576650181,
+        "bias_kmh": -0.4926040794596841,
+        "n": 6476
+      },
+      "NWP icon_eu": {
+        "mae_kmh": 4.181192093545674,
+        "rmse_kmh": 5.305847769767675,
+        "bias_kmh": -2.3268474434981603,
+        "n": 6476
+      },
+      "NWP icon_global": {
+        "mae_kmh": 3.8155274808138078,
+        "rmse_kmh": 5.002843529092021,
+        "bias_kmh": -0.6217560274815251,
+        "n": 6476
+      },
+      "NWP ensemble mean": {
+        "mae_kmh": 3.3776043852749544,
+        "rmse_kmh": 4.378560223622164,
+        "bias_kmh": -0.9118128482171826,
+        "n": 6476
+      },
+      "Observations Ridge": {
+        "mae_kmh": 3.569019985976523,
+        "rmse_kmh": 4.596740704698544,
+        "bias_kmh": 0.24348587291781135,
+        "n": 6476
+      },
+      "NWP residual Ridge": {
+        "mae_kmh": 2.9387820253289725,
+        "rmse_kmh": 3.739950686944336,
+        "bias_kmh": 0.5574144523772578,
+        "n": 6476
+      },
+      "Observations PCA95 + Ridge": {
+        "mae_kmh": 3.5680418128861255,
+        "rmse_kmh": 4.615809144697691,
+        "bias_kmh": 0.18789774990140679,
+        "n": 6476
+      },
+      "NWP residual PCA95 + Ridge": {
+        "mae_kmh": 2.919147048916914,
+        "rmse_kmh": 3.7153920564771905,
+        "bias_kmh": 0.543973494570074,
+        "n": 6476
+      },
+      "Observations PCA99 + Ridge": {
+        "mae_kmh": 3.569146611094107,
+        "rmse_kmh": 4.600158029113461,
+        "bias_kmh": 0.21623481752844476,
+        "n": 6476
+      },
+      "NWP residual PCA99 + Ridge": {
+        "mae_kmh": 2.9318156338120915,
+        "rmse_kmh": 3.7337753248353467,
+        "bias_kmh": 0.5489861251396334,
+        "n": 6476
+      },
+      "obs HGB15": {
+        "mae_kmh": 3.56071183853561,
+        "rmse_kmh": 4.58257082607814,
+        "bias_kmh": 0.28055997206149474,
+        "n": 6476
+      },
+      "direct HGB7": {
+        "mae_kmh": 2.8444955869501753,
+        "rmse_kmh": 3.6414114454495383,
+        "bias_kmh": 0.44489624333367855,
+        "n": 6476
+      },
+      "direct HGB15": {
+        "mae_kmh": 2.8418122834734354,
+        "rmse_kmh": 3.635630544016204,
+        "bias_kmh": 0.43459890617449004,
+        "n": 6476
+      },
+      "residual HGB7": {
+        "mae_kmh": 2.835785676368292,
+        "rmse_kmh": 3.6276195156621505,
+        "bias_kmh": 0.3823451410610606,
+        "n": 6476
+      },
+      "residual HGB15": {
+        "mae_kmh": 2.836718482599979,
+        "rmse_kmh": 3.6362351265780744,
+        "bias_kmh": 0.38380385668335193,
+        "n": 6476
+      }
+    },
+    "best_raw_nwp": "NWP ensemble mean",
+    "selection_score": 0.7660526429862596,
+    "ranking": [
+      "residual HGB7",
+      "residual HGB15",
+      "direct HGB15",
+      "direct HGB7",
+      "NWP residual PCA95 + Ridge",
+      "NWP residual PCA99 + Ridge",
+      "NWP residual Ridge",
+      "NWP ensemble mean",
+      "obs HGB15",
+      "Observations Ridge",
+      "Observations PCA99 + Ridge",
+      "Observations PCA95 + Ridge",
+      "NWP gfs_global",
+      "Seasonal mean",
+      "NWP ecmwf_ifs025",
+      "NWP icon_global",
+      "NWP icon_eu",
+      "Persistence"
+    ],
+    "hgb_iterations": {
+      "obs HGB15": 75,
+      "direct HGB7": 150,
+      "direct HGB15": 75,
+      "residual HGB7": 150,
+      "residual HGB15": 75
+    }
+  },
+  "48": {
+    "blend": {
+      "direct HGB15": 0.5,
+      "residual HGB7": 0.5
+    },
+    "validation_scores": {
+      "Persistence": {
+        "mae_kmh": 4.980074119827053,
+        "rmse_kmh": 6.470245901504976,
+        "bias_kmh": 0.024570722668313765,
+        "n": 6476
+      },
+      "Seasonal mean": {
+        "mae_kmh": 3.659536280438319,
+        "rmse_kmh": 4.705682354118705,
+        "bias_kmh": 0.27796399355240076,
+        "n": 6476
+      },
+      "NWP ecmwf_ifs025": {
+        "mae_kmh": 4.033462008446584,
+        "rmse_kmh": 5.093881311830126,
+        "bias_kmh": -0.27557567496628155,
+        "n": 6476
+      },
+      "NWP gfs_global": {
+        "mae_kmh": 3.657852382470311,
+        "rmse_kmh": 4.851353956845506,
+        "bias_kmh": -0.6054570753700282,
+        "n": 6476
+      },
+      "NWP icon_eu": {
+        "mae_kmh": 4.425359481539971,
+        "rmse_kmh": 5.676724182082512,
+        "bias_kmh": -2.4698190330244127,
+        "n": 6476
+      },
+      "NWP icon_global": {
+        "mae_kmh": 4.069795556559174,
+        "rmse_kmh": 5.353674763632962,
+        "bias_kmh": -0.7854237195865987,
+        "n": 6476
+      },
+      "NWP ensemble mean": {
+        "mae_kmh": 3.5099555256489694,
+        "rmse_kmh": 4.592079772229265,
+        "bias_kmh": -1.03406887123841,
+        "n": 6476
+      },
+      "Observations Ridge": {
+        "mae_kmh": 3.670864998868691,
+        "rmse_kmh": 4.712132960422145,
+        "bias_kmh": 0.28371328138288987,
+        "n": 6476
+      },
+      "NWP residual Ridge": {
+        "mae_kmh": 3.0614923209493137,
+        "rmse_kmh": 3.9173456646236726,
+        "bias_kmh": 0.5642126920931569,
+        "n": 6476
+      },
+      "Observations PCA95 + Ridge": {
+        "mae_kmh": 3.6696147650358775,
+        "rmse_kmh": 4.731506802175992,
+        "bias_kmh": 0.17965996453907834,
+        "n": 6476
+      },
+      "NWP residual PCA95 + Ridge": {
+        "mae_kmh": 3.0324896067436127,
+        "rmse_kmh": 3.8709408104400853,
+        "bias_kmh": 0.5031475835703565,
+        "n": 6476
+      },
+      "Observations PCA99 + Ridge": {
+        "mae_kmh": 3.6730163866299916,
+        "rmse_kmh": 4.71044957766422,
+        "bias_kmh": 0.28990841475881995,
+        "n": 6476
+      },
+      "NWP residual PCA99 + Ridge": {
+        "mae_kmh": 3.0535461075634336,
+        "rmse_kmh": 3.903716743225645,
+        "bias_kmh": 0.5572477847945181,
+        "n": 6476
+      },
+      "obs HGB15": {
+        "mae_kmh": 3.6400305638774317,
+        "rmse_kmh": 4.657707584716906,
+        "bias_kmh": 0.278992829761611,
+        "n": 6476
+      },
+      "direct HGB7": {
+        "mae_kmh": 2.935565932694333,
+        "rmse_kmh": 3.7616880677507276,
+        "bias_kmh": 0.35308925077809783,
+        "n": 6476
+      },
+      "direct HGB15": {
+        "mae_kmh": 2.9381363390112556,
+        "rmse_kmh": 3.7598443576174234,
+        "bias_kmh": 0.3086496116057991,
+        "n": 6476
+      },
+      "residual HGB7": {
+        "mae_kmh": 2.9315348166962325,
+        "rmse_kmh": 3.7733428374076565,
+        "bias_kmh": 0.2636359891084405,
+        "n": 6476
+      },
+      "residual HGB15": {
+        "mae_kmh": 2.9351160111900727,
+        "rmse_kmh": 3.782018839049586,
+        "bias_kmh": 0.25425984327528556,
+        "n": 6476
+      }
+    },
+    "best_raw_nwp": "NWP ensemble mean",
+    "selection_score": 0.7949372579234599,
+    "ranking": [
+      "direct HGB7",
+      "direct HGB15",
+      "residual HGB7",
+      "residual HGB15",
+      "NWP residual PCA95 + Ridge",
+      "NWP residual PCA99 + Ridge",
+      "NWP residual Ridge",
+      "NWP ensemble mean",
+      "obs HGB15",
+      "Seasonal mean",
+      "Observations Ridge",
+      "Observations PCA99 + Ridge",
+      "Observations PCA95 + Ridge",
+      "NWP gfs_global",
+      "NWP ecmwf_ifs025",
+      "NWP icon_global",
+      "NWP icon_eu",
+      "Persistence"
+    ],
+    "hgb_iterations": {
+      "obs HGB15": 150,
+      "direct HGB7": 150,
+      "direct HGB15": 75,
+      "residual HGB7": 150,
+      "residual HGB15": 75
+    }
+  },
+  "72": {
+    "blend": {
+      "direct HGB15": 0.75,
+      "residual HGB7": 0.25
+    },
+    "validation_scores": {
+      "Persistence": {
+        "mae_kmh": 4.913977764051884,
+        "rmse_kmh": 6.387510106554365,
+        "bias_kmh": 0.041080914144533645,
+        "n": 6476
+      },
+      "Seasonal mean": {
+        "mae_kmh": 3.6618864445508335,
+        "rmse_kmh": 4.707596734460262,
+        "bias_kmh": 0.28464311906464396,
+        "n": 6476
+      },
+      "NWP ecmwf_ifs025": {
+        "mae_kmh": 4.110915374861521,
+        "rmse_kmh": 5.208670139005228,
+        "bias_kmh": -0.2960383044395867,
+        "n": 6476
+      },
+      "NWP gfs_global": {
+        "mae_kmh": 3.8467189597148375,
+        "rmse_kmh": 5.156675592403401,
+        "bias_kmh": -0.6587177287987386,
+        "n": 6476
+      },
+      "NWP icon_eu": {
+        "mae_kmh": 4.579526868694502,
+        "rmse_kmh": 5.891899713329249,
+        "bias_kmh": -2.4401395956718166,
+        "n": 6476
+      },
+      "NWP icon_global": {
+        "mae_kmh": 4.271247683087568,
+        "rmse_kmh": 5.637264522854787,
+        "bias_kmh": -0.770019770581609,
+        "n": 6476
+      },
+      "NWP ensemble mean": {
+        "mae_kmh": 3.5897936978886493,
+        "rmse_kmh": 4.713946793587327,
+        "bias_kmh": -1.041228841649227,
+        "n": 6476
+      },
+      "Observations Ridge": {
+        "mae_kmh": 3.700598994164352,
+        "rmse_kmh": 4.734672454628808,
+        "bias_kmh": 0.3351479250093239,
+        "n": 6476
+      },
+      "NWP residual Ridge": {
+        "mae_kmh": 3.145233326183564,
+        "rmse_kmh": 4.024366855931326,
+        "bias_kmh": 0.5302894416674188,
+        "n": 6476
+      },
+      "Observations PCA95 + Ridge": {
+        "mae_kmh": 3.7009343006141098,
+        "rmse_kmh": 4.759611059712394,
+        "bias_kmh": 0.2052719005174736,
+        "n": 6476
+      },
+      "NWP residual PCA95 + Ridge": {
+        "mae_kmh": 3.1396746607000554,
+        "rmse_kmh": 4.0001289848831645,
+        "bias_kmh": 0.5752198810338826,
+        "n": 6476
+      },
+      "Observations PCA99 + Ridge": {
+        "mae_kmh": 3.693694749826852,
+        "rmse_kmh": 4.730211566596139,
+        "bias_kmh": 0.31547142419644225,
+        "n": 6476
+      },
+      "NWP residual PCA99 + Ridge": {
+        "mae_kmh": 3.1507288865589516,
+        "rmse_kmh": 4.020286574374557,
+        "bias_kmh": 0.611824527473049,
+        "n": 6476
+      },
+      "obs HGB15": {
+        "mae_kmh": 3.665558214995297,
+        "rmse_kmh": 4.694328079851247,
+        "bias_kmh": 0.2362902797000288,
+        "n": 6476
+      },
+      "direct HGB7": {
+        "mae_kmh": 3.0221599768490024,
+        "rmse_kmh": 3.8708013788845625,
+        "bias_kmh": 0.2607860246404527,
+        "n": 6476
+      },
+      "direct HGB15": {
+        "mae_kmh": 3.0182172259011897,
+        "rmse_kmh": 3.8620425450593157,
+        "bias_kmh": 0.326311162916268,
+        "n": 6476
+      },
+      "residual HGB7": {
+        "mae_kmh": 3.0558215370383124,
+        "rmse_kmh": 3.9423429359485653,
+        "bias_kmh": 0.26760362998319004,
+        "n": 6476
+      },
+      "residual HGB15": {
+        "mae_kmh": 3.059252691830483,
+        "rmse_kmh": 3.9406861716885255,
+        "bias_kmh": 0.27728385039994285,
+        "n": 6476
+      }
+    },
+    "best_raw_nwp": "NWP ensemble mean",
+    "selection_score": 0.8202248436123302,
+    "ranking": [
+      "direct HGB15",
+      "direct HGB7",
+      "residual HGB7",
+      "residual HGB15",
+      "NWP residual PCA95 + Ridge",
+      "NWP residual Ridge",
+      "NWP residual PCA99 + Ridge",
+      "NWP ensemble mean",
+      "obs HGB15",
+      "Seasonal mean",
+      "Observations PCA99 + Ridge",
+      "Observations Ridge",
+      "Observations PCA95 + Ridge",
+      "NWP gfs_global",
+      "NWP ecmwf_ifs025",
+      "NWP icon_global",
+      "NWP icon_eu",
+      "Persistence"
+    ],
+    "hgb_iterations": {
+      "obs HGB15": 75,
+      "direct HGB7": 75,
+      "direct HGB15": 75,
+      "residual HGB7": 150,
+      "residual HGB15": 75
+    }
+  }
+}

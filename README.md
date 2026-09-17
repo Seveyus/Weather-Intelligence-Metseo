@@ -1,8 +1,41 @@
 # AI_m-t-o
 
-Experimental hourly wind forecasting for the **SAINT-ETIENNE** weather station. The project prepares historical station observations, trains a bidirectional GRU, and predicts wind as two vector components before converting the result back to wind speed.
+Experimental wind forecasting for the **SAINT-ETIENNE** weather station. The repository contains the original one-hour GRU experiment and a new evaluated pipeline for **+24, +48 and +72 hours** using archived numerical weather forecasts with local machine learning corrections.
 
-## What the model currently predicts
+## New: forecasts at +24 / +48 / +72 hours
+
+The new pipeline compares PCA + Ridge, Ridge, boosted trees, raw forecasts and forecast ensembles. Models are selected on January–September 2025, uncertainty intervals calibrated on October–December 2025, and final errors measured on January 4–February 4, 2026 (748 shared observations).
+
+| Horizon | Raw NWP reference MAE | Selected model MAE | Selected model RMSE |
+| --- | ---: | ---: | ---: |
+| +24 h | 3.46 km/h | **2.76 km/h** | **3.54 km/h** |
+| +48 h | 3.76 km/h | **3.08 km/h** | **3.88 km/h** |
+| +72 h | 3.66 km/h | **3.11 km/h** | **3.90 km/h** |
+
+The selected models combine direct and residual gradient boosting using ECMWF, ICON Global, ICON Europe and GFS forecast inputs. PCA was tested and slightly improved linear validation scores, but was not part of the selected ensembles.
+
+Archived NWP offsets use initialization rather than actual publication time. This experiment conservatively uses 48/72/96-hour archive offsets for 24/48/72-hour predictions, allowing a full day for forecast availability. The same restriction applies to the raw NWP reference. Historical publication outages are not verified. These are **short winter-test results**, not a year-round operational guarantee; comparison with the older GRU's different test period would be misleading.
+
+[Detailed report in French](reports/wind_advanced/RAPPORT.md) · [Results chart](reports/wind_advanced/resultats_24_48_72h.png)
+
+```bash
+python -m pip install -r requirements-wind.txt
+python analysis/fetch_nwp_archive.py
+python analysis/fetch_nwp_archive.py --horizons 96 --output-dir reports/wind_advanced/data/day4
+python analysis/train_wind_advanced.py
+python analysis/plot_wind_advanced.py
+python -m unittest discover -s tests -v
+```
+
+With the raw observation CSVs and cached forecasts present, replay a historical forecast using the saved models:
+
+```bash
+python analysis/train_wind_advanced.py --predict-at 2026-02-01T00:00:00Z
+```
+
+This returns three point forecasts and calibrated intervals for the specified historical issue time. It does not fetch current station observations or provide a live forecast service. Models, preprocessing and feature schema are saved in `reports/wind_advanced/wind_models.joblib`; downloaded data and that artifact are ignored by Git.
+
+## Original GRU: what the model predicts
 
 The current training configuration is:
 

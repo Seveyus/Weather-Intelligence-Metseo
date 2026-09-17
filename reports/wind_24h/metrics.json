@@ -1,0 +1,418 @@
+{
+  "study": "Exploratory direct wind-speed forecasts; not the existing GRU",
+  "train_target_years": "2020\u20132023",
+  "validation_year": 2024,
+  "test_year": 2025,
+  "selection": "50/100/200 iterations; choose minimum 2024 RMSE for each lead",
+  "fit_policy": "Fit only on 2020\u20132023; no refit on validation observations",
+  "features": "Past station observations up to 72h, causal fill max 3h, future calendar only",
+  "model": "HistGradientBoostingRegressor, squared error, 15 leaves, learning rate .05, L2 10, min leaf 40",
+  "baseline_definition": "Persistence = observed FF at issue_time; seasonal mean = train-only month/hour mean",
+  "limitations": [
+    "Single test year; exploratory, not operational validation",
+    "Historical observation availability assumed immediate at issue_time",
+    "No archived NWP forecast inputs; no GRU retraining",
+    "No quality-code rejection beyond excluding missing/negative FF",
+    "Historical dataset used in earlier repo work; not a never-viewed external test set"
+  ],
+  "versions": {
+    "python": "3.12.3",
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "matplotlib": "3.11.2"
+  },
+  "script_sha256": "c8cd455f4b603c6870b3dde9744e9657f904833bdc510eff88d9a828e2c0bf89",
+  "data_audit": {
+    "raw_station_rows": 53271,
+    "grid_rows": 53428,
+    "absent_hourly_rows": 157,
+    "missing_ff_in_raw_rows": 254,
+    "target_imputation": "none; only originally observed nonnegative FF scored",
+    "quality_flags": {
+      "1.0": 53040,
+      "nan": 153,
+      "9.0": 78
+    },
+    "quality_policy": "Nonmissing nonnegative FF; no additional quality-flag filter",
+    "pressure_source": "SAINT-ETIENNE, falling back to BOUTHEON at the same time",
+    "timestamp_policy": "Exact source timestamps, sorted and reindexed hourly; no timezone conversion"
+  },
+  "scores": [
+    {
+      "horizon_hours": 1,
+      "method": "Persistence",
+      "mae_kmh": 2.720082474226804,
+      "rmse_kmh": 3.625435914067481,
+      "bias_kmh": 0.0008247422680412399,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 1,
+      "method": "Seasonal mean",
+      "mae_kmh": 3.7610961269996874,
+      "rmse_kmh": 4.829368009124089,
+      "bias_kmh": 0.16971587027180565,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 1,
+      "method": "Direct boosted trees",
+      "mae_kmh": 2.4122144006190527,
+      "rmse_kmh": 3.166823814795389,
+      "bias_kmh": 0.14077357595387488,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 3,
+      "method": "Persistence",
+      "mae_kmh": 3.624164948453608,
+      "rmse_kmh": 4.750095213370199,
+      "bias_kmh": 0.0021443298969072108,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 3,
+      "method": "Seasonal mean",
+      "mae_kmh": 3.7610961269996874,
+      "rmse_kmh": 4.829368009124089,
+      "bias_kmh": 0.16971587027180565,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 3,
+      "method": "Direct boosted trees",
+      "mae_kmh": 2.969715696932318,
+      "rmse_kmh": 3.830638823578641,
+      "bias_kmh": 0.24323387649270717,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 6,
+      "method": "Persistence",
+      "mae_kmh": 4.297443298969072,
+      "rmse_kmh": 5.577967704400968,
+      "bias_kmh": 0.004412371134020621,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 6,
+      "method": "Seasonal mean",
+      "mae_kmh": 3.7610961269996874,
+      "rmse_kmh": 4.829368009124089,
+      "bias_kmh": 0.16971587027180565,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 6,
+      "method": "Direct boosted trees",
+      "mae_kmh": 3.2597442837564152,
+      "rmse_kmh": 4.203868755476398,
+      "bias_kmh": 0.2942639100254232,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 12,
+      "method": "Persistence",
+      "mae_kmh": 4.867711340206185,
+      "rmse_kmh": 6.290158439648105,
+      "bias_kmh": 0.006185567010309304,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 12,
+      "method": "Seasonal mean",
+      "mae_kmh": 3.7610961269996874,
+      "rmse_kmh": 4.829368009124089,
+      "bias_kmh": 0.16971587027180565,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 12,
+      "method": "Direct boosted trees",
+      "mae_kmh": 3.5220711884180624,
+      "rmse_kmh": 4.543075875911028,
+      "bias_kmh": 0.3136530999708153,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 24,
+      "method": "Persistence",
+      "mae_kmh": 4.851134020618557,
+      "rmse_kmh": 6.341811767534997,
+      "bias_kmh": 0.00816494845360825,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 24,
+      "method": "Seasonal mean",
+      "mae_kmh": 3.7610961269996874,
+      "rmse_kmh": 4.829368009124089,
+      "bias_kmh": 0.16971587027180565,
+      "n": 8730
+    },
+    {
+      "horizon_hours": 24,
+      "method": "Direct boosted trees",
+      "mae_kmh": 3.692308983821131,
+      "rmse_kmh": 4.745997819620443,
+      "bias_kmh": 0.28243017093865275,
+      "n": 8730
+    }
+  ],
+  "horizon_details": {
+    "1": {
+      "train_n": 34544,
+      "validation_n": 8781,
+      "test_n": 8730,
+      "selected_iterations": 200,
+      "validation_candidates": {
+        "50": {
+          "mae_kmh": 2.602588581826996,
+          "rmse_kmh": 3.436649480804464,
+          "bias_kmh": -0.01281416091825302,
+          "n": 8781
+        },
+        "100": {
+          "mae_kmh": 2.5434752471995967,
+          "rmse_kmh": 3.368764261653673,
+          "bias_kmh": 0.007257690461513379,
+          "n": 8781
+        },
+        "200": {
+          "mae_kmh": 2.5388638555038856,
+          "rmse_kmh": 3.365033954309332,
+          "bias_kmh": 0.002911795151178847,
+          "n": 8781
+        }
+      },
+      "high_wind_threshold_kmh_training_p90": 16.2,
+      "high_wind_scores": {
+        "Persistence": {
+          "mae_kmh": 4.211912832929782,
+          "rmse_kmh": 5.399418854927289,
+          "bias_kmh": -2.5261016949152544,
+          "n": 826
+        },
+        "Seasonal mean": {
+          "mae_kmh": 9.687578709942738,
+          "rmse_kmh": 10.340110612895607,
+          "bias_kmh": -9.687578709942738,
+          "n": 826
+        },
+        "Direct boosted trees": {
+          "mae_kmh": 4.265487434889914,
+          "rmse_kmh": 5.3515528215119,
+          "bias_kmh": -3.7158957877980834,
+          "n": 826
+        }
+      }
+    },
+    "3": {
+      "train_n": 34488,
+      "validation_n": 8779,
+      "test_n": 8730,
+      "selected_iterations": 200,
+      "validation_candidates": {
+        "50": {
+          "mae_kmh": 3.2339542598740016,
+          "rmse_kmh": 4.208801760189919,
+          "bias_kmh": -0.01763858535729473,
+          "n": 8779
+        },
+        "100": {
+          "mae_kmh": 3.1766807490149094,
+          "rmse_kmh": 4.129366496347143,
+          "bias_kmh": -0.004232006072752601,
+          "n": 8779
+        },
+        "200": {
+          "mae_kmh": 3.161534300972357,
+          "rmse_kmh": 4.111177678803367,
+          "bias_kmh": -0.0010730588688795397,
+          "n": 8779
+        }
+      },
+      "high_wind_threshold_kmh_training_p90": 16.2,
+      "high_wind_scores": {
+        "Persistence": {
+          "mae_kmh": 5.628377723970944,
+          "rmse_kmh": 7.000141402930154,
+          "bias_kmh": -4.112542372881356,
+          "n": 826
+        },
+        "Seasonal mean": {
+          "mae_kmh": 9.687578709942738,
+          "rmse_kmh": 10.340110612895607,
+          "bias_kmh": -9.687578709942738,
+          "n": 826
+        },
+        "Direct boosted trees": {
+          "mae_kmh": 5.65930416210443,
+          "rmse_kmh": 6.800422572340914,
+          "bias_kmh": -5.3958584754808046,
+          "n": 826
+        }
+      }
+    },
+    "6": {
+      "train_n": 34430,
+      "validation_n": 8776,
+      "test_n": 8730,
+      "selected_iterations": 200,
+      "validation_candidates": {
+        "50": {
+          "mae_kmh": 3.5579185229776065,
+          "rmse_kmh": 4.647368280945418,
+          "bias_kmh": -0.053492297832339164,
+          "n": 8776
+        },
+        "100": {
+          "mae_kmh": 3.5028825758761437,
+          "rmse_kmh": 4.565270204669341,
+          "bias_kmh": -0.019565050747861735,
+          "n": 8776
+        },
+        "200": {
+          "mae_kmh": 3.4977320413561834,
+          "rmse_kmh": 4.557847027838323,
+          "bias_kmh": 0.005248879006994042,
+          "n": 8776
+        }
+      },
+      "high_wind_threshold_kmh_training_p90": 16.2,
+      "high_wind_scores": {
+        "Persistence": {
+          "mae_kmh": 7.034818401937046,
+          "rmse_kmh": 8.551810818819115,
+          "bias_kmh": -5.828426150121065,
+          "n": 826
+        },
+        "Seasonal mean": {
+          "mae_kmh": 9.687578709942738,
+          "rmse_kmh": 10.340110612895607,
+          "bias_kmh": -9.687578709942738,
+          "n": 826
+        },
+        "Direct boosted trees": {
+          "mae_kmh": 6.885560254636599,
+          "rmse_kmh": 7.9545926642677305,
+          "bias_kmh": -6.794682781500586,
+          "n": 826
+        }
+      }
+    },
+    "12": {
+      "train_n": 34350,
+      "validation_n": 8770,
+      "test_n": 8730,
+      "selected_iterations": 200,
+      "validation_candidates": {
+        "50": {
+          "mae_kmh": 3.8845785147920155,
+          "rmse_kmh": 5.097268443440361,
+          "bias_kmh": -0.2136232767076097,
+          "n": 8770
+        },
+        "100": {
+          "mae_kmh": 3.8473765885203934,
+          "rmse_kmh": 5.041032485755442,
+          "bias_kmh": -0.17910610056903659,
+          "n": 8770
+        },
+        "200": {
+          "mae_kmh": 3.8351030478895147,
+          "rmse_kmh": 5.036991266593857,
+          "bias_kmh": -0.15711181095199053,
+          "n": 8770
+        }
+      },
+      "high_wind_threshold_kmh_training_p90": 16.2,
+      "high_wind_scores": {
+        "Persistence": {
+          "mae_kmh": 8.73588377723971,
+          "rmse_kmh": 10.185003075666287,
+          "bias_kmh": -7.886004842615012,
+          "n": 826
+        },
+        "Seasonal mean": {
+          "mae_kmh": 9.687578709942738,
+          "rmse_kmh": 10.340110612895607,
+          "bias_kmh": -9.687578709942738,
+          "n": 826
+        },
+        "Direct boosted trees": {
+          "mae_kmh": 8.199250742685697,
+          "rmse_kmh": 9.036936477507506,
+          "bias_kmh": -8.194283898484246,
+          "n": 826
+        }
+      }
+    },
+    "24": {
+      "train_n": 34348,
+      "validation_n": 8758,
+      "test_n": 8730,
+      "selected_iterations": 100,
+      "validation_candidates": {
+        "50": {
+          "mae_kmh": 4.0480408332535145,
+          "rmse_kmh": 5.345584401803492,
+          "bias_kmh": -0.25605392691658585,
+          "n": 8758
+        },
+        "100": {
+          "mae_kmh": 4.036170901282841,
+          "rmse_kmh": 5.316206331906951,
+          "bias_kmh": -0.18266809621186553,
+          "n": 8758
+        },
+        "200": {
+          "mae_kmh": 4.0601953099537695,
+          "rmse_kmh": 5.337910418090137,
+          "bias_kmh": -0.12556464575807122,
+          "n": 8758
+        }
+      },
+      "high_wind_threshold_kmh_training_p90": 16.2,
+      "high_wind_scores": {
+        "Persistence": {
+          "mae_kmh": 9.34997578692494,
+          "rmse_kmh": 10.8241545867638,
+          "bias_kmh": -8.853995157384988,
+          "n": 826
+        },
+        "Seasonal mean": {
+          "mae_kmh": 9.687578709942738,
+          "rmse_kmh": 10.340110612895607,
+          "bias_kmh": -9.687578709942738,
+          "n": 826
+        },
+        "Direct boosted trees": {
+          "mae_kmh": 9.270245739993861,
+          "rmse_kmh": 9.949513322522963,
+          "bias_kmh": -9.270245739993861,
+          "n": 826
+        }
+      },
+      "skill_vs_persistence": {
+        "mae_skill_percent": 23.887714333846965,
+        "approx_95pct_block_bootstrap_interval_percent": [
+          21.199128332140464,
+          26.10087743799055
+        ],
+        "block_observations": 168,
+        "replicates": 1000
+      },
+      "skill_vs_seasonal_mean": {
+        "mae_skill_percent": 1.8289121270992248,
+        "approx_95pct_block_bootstrap_interval_percent": [
+          -0.03503197654228571,
+          3.7916599387988477
+        ],
+        "block_observations": 168,
+        "replicates": 1000
+      }
+    }
+  }
+}

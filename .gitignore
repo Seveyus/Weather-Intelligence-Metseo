@@ -4,3 +4,7 @@
 __pycache__/
 H_42_latest-2025-2026.csv
 H_42_previous-2020-2024.csv
+
+# Downloaded archives and fitted local forecast models
+/reports/wind_advanced/data/
+/reports/wind_advanced/wind_models.joblib
