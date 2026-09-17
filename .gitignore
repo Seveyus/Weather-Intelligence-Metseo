@@ -8,3 +8,10 @@ H_42_previous-2020-2024.csv
 # Downloaded archives and fitted local forecast models
 /reports/wind_advanced/data/
 /reports/wind_advanced/wind_models.joblib
+
+# Neural training artifacts; protocols, metrics and reports remain versioned
+/reports/wind_neural/checkpoints/
+/reports/wind_neural/preprocessing.joblib
+/reports/wind_neural/refit_preprocessing.joblib
+/reports/wind_neural/*.log
+/reports/wind_advanced/training.log
