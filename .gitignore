@@ -15,3 +15,7 @@ H_42_previous-2020-2024.csv
 /reports/wind_neural/refit_preprocessing.joblib
 /reports/wind_neural/*.log
 /reports/wind_advanced/training.log
+
+# Small evaluation tables freeze the exact scored cases (not training data).
+!/reports/wind_advanced/predictions_*h.csv
+!/reports/wind_neural/predictions_*h.csv
