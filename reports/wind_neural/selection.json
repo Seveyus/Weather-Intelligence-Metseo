@@ -1,0 +1,338 @@
+{
+  "selected": "bilstm",
+  "seeds": [
+    11,
+    23
+  ],
+  "candidates": {
+    "bigru": {
+      "runs": [
+        {
+          "candidate": "bigru",
+          "seed": 11,
+          "best_epoch": 2,
+          "epochs_run": 8,
+          "duration_seconds": 4.816688110000541,
+          "parameters": 50681,
+          "config": {
+            "past_features": 49,
+            "future_features": 274,
+            "horizons": [
+              24,
+              48,
+              72
+            ],
+            "cell": "gru",
+            "hidden_size": 48,
+            "num_layers": 1,
+            "bidirectional": true,
+            "attention": false,
+            "dropout": 0.1,
+            "residual_scale": 5.0,
+            "horizon_embedding_size": 8,
+            "minimum_baseline": 0.05
+          },
+          "device": "cuda:0",
+          "checkpoint": "reports/wind_neural/checkpoints/selection_bigru_11.pt"
+        },
+        {
+          "candidate": "bigru",
+          "seed": 23,
+          "best_epoch": 5,
+          "epochs_run": 11,
+          "duration_seconds": 5.960367944997415,
+          "parameters": 50681,
+          "config": {
+            "past_features": 49,
+            "future_features": 274,
+            "horizons": [
+              24,
+              48,
+              72
+            ],
+            "cell": "gru",
+            "hidden_size": 48,
+            "num_layers": 1,
+            "bidirectional": true,
+            "attention": false,
+            "dropout": 0.1,
+            "residual_scale": 5.0,
+            "horizon_embedding_size": 8,
+            "minimum_baseline": 0.05
+          },
+          "device": "cuda:0",
+          "checkpoint": "reports/wind_neural/checkpoints/selection_bigru_23.pt"
+        }
+      ],
+      "validation_scores": {
+        "24": {
+          "mae_kmh": 2.891775608062744,
+          "rmse_kmh": 3.703197717666626,
+          "bias_kmh": 0.38848328590393066,
+          "n": 6478
+        },
+        "48": {
+          "mae_kmh": 2.985187530517578,
+          "rmse_kmh": 3.8396620750427246,
+          "bias_kmh": 0.3455466330051422,
+          "n": 6478
+        },
+        "72": {
+          "mae_kmh": 3.0796549320220947,
+          "rmse_kmh": 3.960426092147827,
+          "bias_kmh": 0.30735209584236145,
+          "n": 6478
+        }
+      },
+      "objective": 0.8143948268471464
+    },
+    "bilstm": {
+      "runs": [
+        {
+          "candidate": "bilstm",
+          "seed": 11,
+          "best_epoch": 2,
+          "epochs_run": 8,
+          "duration_seconds": 4.614273546998447,
+          "parameters": 60185,
+          "config": {
+            "past_features": 49,
+            "future_features": 274,
+            "horizons": [
+              24,
+              48,
+              72
+            ],
+            "cell": "lstm",
+            "hidden_size": 48,
+            "num_layers": 1,
+            "bidirectional": true,
+            "attention": false,
+            "dropout": 0.1,
+            "residual_scale": 5.0,
+            "horizon_embedding_size": 8,
+            "minimum_baseline": 0.05
+          },
+          "device": "cuda:0",
+          "checkpoint": "reports/wind_neural/checkpoints/selection_bilstm_11.pt"
+        },
+        {
+          "candidate": "bilstm",
+          "seed": 23,
+          "best_epoch": 8,
+          "epochs_run": 14,
+          "duration_seconds": 7.898236190001626,
+          "parameters": 60185,
+          "config": {
+            "past_features": 49,
+            "future_features": 274,
+            "horizons": [
+              24,
+              48,
+              72
+            ],
+            "cell": "lstm",
+            "hidden_size": 48,
+            "num_layers": 1,
+            "bidirectional": true,
+            "attention": false,
+            "dropout": 0.1,
+            "residual_scale": 5.0,
+            "horizon_embedding_size": 8,
+            "minimum_baseline": 0.05
+          },
+          "device": "cuda:0",
+          "checkpoint": "reports/wind_neural/checkpoints/selection_bilstm_23.pt"
+        }
+      ],
+      "validation_scores": {
+        "24": {
+          "mae_kmh": 2.868748903274536,
+          "rmse_kmh": 3.6837968826293945,
+          "bias_kmh": 0.25257784128189087,
+          "n": 6478
+        },
+        "48": {
+          "mae_kmh": 2.962493896484375,
+          "rmse_kmh": 3.8093416690826416,
+          "bias_kmh": 0.20933881402015686,
+          "n": 6478
+        },
+        "72": {
+          "mae_kmh": 3.067617654800415,
+          "rmse_kmh": 3.956613063812256,
+          "bias_kmh": 0.24478311836719513,
+          "n": 6478
+        }
+      },
+      "objective": 0.8098739069937745
+    },
+    "bigru_attention": {
+      "runs": [
+        {
+          "candidate": "bigru_attention",
+          "seed": 11,
+          "best_epoch": 5,
+          "epochs_run": 11,
+          "duration_seconds": 6.830269308997231,
+          "parameters": 62825,
+          "config": {
+            "past_features": 49,
+            "future_features": 274,
+            "horizons": [
+              24,
+              48,
+              72
+            ],
+            "cell": "gru",
+            "hidden_size": 48,
+            "num_layers": 1,
+            "bidirectional": true,
+            "attention": true,
+            "dropout": 0.1,
+            "residual_scale": 5.0,
+            "horizon_embedding_size": 8,
+            "minimum_baseline": 0.05
+          },
+          "device": "cuda:0",
+          "checkpoint": "reports/wind_neural/checkpoints/selection_bigru_attention_11.pt"
+        },
+        {
+          "candidate": "bigru_attention",
+          "seed": 23,
+          "best_epoch": 4,
+          "epochs_run": 10,
+          "duration_seconds": 6.324469193998084,
+          "parameters": 62825,
+          "config": {
+            "past_features": 49,
+            "future_features": 274,
+            "horizons": [
+              24,
+              48,
+              72
+            ],
+            "cell": "gru",
+            "hidden_size": 48,
+            "num_layers": 1,
+            "bidirectional": true,
+            "attention": true,
+            "dropout": 0.1,
+            "residual_scale": 5.0,
+            "horizon_embedding_size": 8,
+            "minimum_baseline": 0.05
+          },
+          "device": "cuda:0",
+          "checkpoint": "reports/wind_neural/checkpoints/selection_bigru_attention_23.pt"
+        }
+      ],
+      "validation_scores": {
+        "24": {
+          "mae_kmh": 2.915335178375244,
+          "rmse_kmh": 3.7260665893554688,
+          "bias_kmh": 0.4321812689304352,
+          "n": 6478
+        },
+        "48": {
+          "mae_kmh": 2.994612693786621,
+          "rmse_kmh": 3.8410356044769287,
+          "bias_kmh": 0.4124967157840729,
+          "n": 6478
+        },
+        "72": {
+          "mae_kmh": 3.1007955074310303,
+          "rmse_kmh": 3.9722795486450195,
+          "bias_kmh": 0.39807745814323425,
+          "n": 6478
+        }
+      },
+      "objective": 0.8181327976682985
+    },
+    "history_ablation": {
+      "runs": [
+        {
+          "candidate": "history_ablation",
+          "seed": 11,
+          "best_epoch": 5,
+          "epochs_run": 11,
+          "duration_seconds": 6.25444521800091,
+          "parameters": 50681,
+          "config": {
+            "past_features": 49,
+            "future_features": 274,
+            "horizons": [
+              24,
+              48,
+              72
+            ],
+            "cell": "gru",
+            "hidden_size": 48,
+            "num_layers": 1,
+            "bidirectional": true,
+            "attention": false,
+            "dropout": 0.1,
+            "residual_scale": 5.0,
+            "horizon_embedding_size": 8,
+            "minimum_baseline": 0.05
+          },
+          "device": "cuda:0",
+          "checkpoint": "reports/wind_neural/checkpoints/selection_history_ablation_11.pt"
+        },
+        {
+          "candidate": "history_ablation",
+          "seed": 23,
+          "best_epoch": 5,
+          "epochs_run": 11,
+          "duration_seconds": 6.054855215999851,
+          "parameters": 50681,
+          "config": {
+            "past_features": 49,
+            "future_features": 274,
+            "horizons": [
+              24,
+              48,
+              72
+            ],
+            "cell": "gru",
+            "hidden_size": 48,
+            "num_layers": 1,
+            "bidirectional": true,
+            "attention": false,
+            "dropout": 0.1,
+            "residual_scale": 5.0,
+            "horizon_embedding_size": 8,
+            "minimum_baseline": 0.05
+          },
+          "device": "cuda:0",
+          "checkpoint": "reports/wind_neural/checkpoints/selection_history_ablation_23.pt"
+        }
+      ],
+      "validation_scores": {
+        "24": {
+          "mae_kmh": 2.8663601875305176,
+          "rmse_kmh": 3.667325735092163,
+          "bias_kmh": 0.35517531633377075,
+          "n": 6478
+        },
+        "48": {
+          "mae_kmh": 2.9737966060638428,
+          "rmse_kmh": 3.8178374767303467,
+          "bias_kmh": 0.3137719929218292,
+          "n": 6478
+        },
+        "72": {
+          "mae_kmh": 3.056539297103882,
+          "rmse_kmh": 3.934450149536133,
+          "bias_kmh": 0.24057741463184357,
+          "n": 6478
+        }
+      },
+      "objective": 0.8087101748647857
+    }
+  },
+  "selected_epochs": {
+    "11": 2,
+    "23": 8
+  },
+  "selection_only": "2025 validation; 2026 predictions not computed in this phase"
+}
