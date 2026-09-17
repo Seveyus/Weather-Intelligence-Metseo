@@ -1,0 +1,102 @@
+[
+  {
+    "candidate": "bilstm",
+    "seed": 11,
+    "best_epoch": 2,
+    "epochs_run": 2,
+    "duration_seconds": 1.8753805039996223,
+    "parameters": 60185,
+    "config": {
+      "past_features": 49,
+      "future_features": 274,
+      "horizons": [
+        24,
+        48,
+        72
+      ],
+      "cell": "lstm",
+      "hidden_size": 48,
+      "num_layers": 1,
+      "bidirectional": true,
+      "attention": false,
+      "dropout": 0.1,
+      "residual_scale": 5.0,
+      "horizon_embedding_size": 8,
+      "minimum_baseline": 0.05
+    },
+    "device": "cuda:0",
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.8766509311509135
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.736445222265021
+      }
+    ],
+    "checkpoint": "reports/wind_neural/checkpoints/refit_bilstm_11.pt"
+  },
+  {
+    "candidate": "bilstm",
+    "seed": 23,
+    "best_epoch": 8,
+    "epochs_run": 8,
+    "duration_seconds": 5.690848867001478,
+    "parameters": 60185,
+    "config": {
+      "past_features": 49,
+      "future_features": 274,
+      "horizons": [
+        24,
+        48,
+        72
+      ],
+      "cell": "lstm",
+      "hidden_size": 48,
+      "num_layers": 1,
+      "bidirectional": true,
+      "attention": false,
+      "dropout": 0.1,
+      "residual_scale": 5.0,
+      "horizon_embedding_size": 8,
+      "minimum_baseline": 0.05
+    },
+    "device": "cuda:0",
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.8617370494693068
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.7366540868015281
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.709664510579778
+      },
+      {
+        "epoch": 4,
+        "train_loss": 0.6888349651382617
+      },
+      {
+        "epoch": 5,
+        "train_loss": 0.6698280331683459
+      },
+      {
+        "epoch": 6,
+        "train_loss": 0.653453405504492
+      },
+      {
+        "epoch": 7,
+        "train_loss": 0.6381018778367764
+      },
+      {
+        "epoch": 8,
+        "train_loss": 0.6219869587339887
+      }
+    ],
+    "checkpoint": "reports/wind_neural/checkpoints/refit_bilstm_23.pt"
+  }
+]

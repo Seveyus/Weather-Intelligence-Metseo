@@ -1,0 +1,155 @@
+{
+  "selected": "bilstm",
+  "test_status": "Previously viewed retrospective comparison",
+  "scores": [
+    {
+      "horizon_hours": 24,
+      "method": "Tree baseline",
+      "mae_kmh": 2.7584794698566477,
+      "rmse_kmh": 3.535832478861288,
+      "bias_kmh": 0.3541272164717139,
+      "n": 748,
+      "high_wind_mae_kmh": 4.656855513068375,
+      "high_wind_bias_kmh": -4.201014860100271
+    },
+    {
+      "horizon_hours": 24,
+      "method": "Neural ensemble",
+      "mae_kmh": 2.8601378941663445,
+      "rmse_kmh": 3.651384968280097,
+      "bias_kmh": 0.6756534448409462,
+      "n": 748,
+      "high_wind_mae_kmh": 4.461871774719983,
+      "high_wind_bias_kmh": -3.784671193099604
+    },
+    {
+      "horizon_hours": 24,
+      "method": "Raw NWP",
+      "mae_kmh": 3.459513368983958,
+      "rmse_kmh": 4.44256529086927,
+      "bias_kmh": -0.7183395721925133,
+      "n": 748,
+      "high_wind_mae_kmh": 4.848146341463414,
+      "high_wind_bias_kmh": -2.381268292682927
+    },
+    {
+      "horizon_hours": 48,
+      "method": "Tree baseline",
+      "mae_kmh": 3.076874328149244,
+      "rmse_kmh": 3.884725400085085,
+      "bias_kmh": 0.7199494672794542,
+      "n": 748,
+      "high_wind_mae_kmh": 4.444066982268934,
+      "high_wind_bias_kmh": -4.132394004864448
+    },
+    {
+      "horizon_hours": 48,
+      "method": "Neural ensemble",
+      "mae_kmh": 3.2236788460277617,
+      "rmse_kmh": 4.070193750546352,
+      "bias_kmh": 0.9188287327761318,
+      "n": 748,
+      "high_wind_mae_kmh": 5.002432911570479,
+      "high_wind_bias_kmh": -4.180421762233828
+    },
+    {
+      "horizon_hours": 48,
+      "method": "Raw NWP",
+      "mae_kmh": 3.7571029411764707,
+      "rmse_kmh": 4.8204853169755095,
+      "bias_kmh": -0.3053863636363638,
+      "n": 748,
+      "high_wind_mae_kmh": 5.260170731707317,
+      "high_wind_bias_kmh": -2.2489024390243904
+    },
+    {
+      "horizon_hours": 72,
+      "method": "Tree baseline",
+      "mae_kmh": 3.1089362331430666,
+      "rmse_kmh": 3.902662387509195,
+      "bias_kmh": 0.9691775816760725,
+      "n": 748,
+      "high_wind_mae_kmh": 5.382754616211881,
+      "high_wind_bias_kmh": -5.324540376932296
+    },
+    {
+      "horizon_hours": 72,
+      "method": "Neural ensemble",
+      "mae_kmh": 3.300406274999527,
+      "rmse_kmh": 4.122569734592678,
+      "bias_kmh": 1.0961514525999996,
+      "n": 748,
+      "high_wind_mae_kmh": 5.26146166359506,
+      "high_wind_bias_kmh": -5.101260188032942
+    },
+    {
+      "horizon_hours": 72,
+      "method": "Raw NWP",
+      "mae_kmh": 3.660401069518717,
+      "rmse_kmh": 4.7462603052326084,
+      "bias_kmh": -0.5056844919786098,
+      "n": 748,
+      "high_wind_mae_kmh": 6.644853658536586,
+      "high_wind_bias_kmh": -5.170609756097561
+    }
+  ],
+  "horizons": {
+    "24": {
+      "skill_vs_trees": {
+        "mae_skill_percent": -3.685306540091071,
+        "approx_95pct_interval": [
+          -7.749779302978554,
+          -1.271361370755053
+        ],
+        "blocks": 5,
+        "block_scored_observations": 168
+      },
+      "high_wind_threshold_kmh": 16.56,
+      "high_wind_n": 41,
+      "interval_radius_kmh": 4.542098522186279,
+      "interval_coverage": 0.7941176470588235,
+      "interval_mean_width_kmh": 9.083488464355469,
+      "test_n": 748
+    },
+    "48": {
+      "skill_vs_trees": {
+        "mae_skill_percent": -4.771222423205734,
+        "approx_95pct_interval": [
+          -7.645764922351805,
+          -2.9577184536437873
+        ],
+        "blocks": 5,
+        "block_scored_observations": 168
+      },
+      "high_wind_threshold_kmh": 16.56,
+      "high_wind_n": 41,
+      "interval_radius_kmh": 4.728605270385742,
+      "interval_coverage": 0.7633689839572193,
+      "interval_mean_width_kmh": 9.456542015075684,
+      "test_n": 748
+    },
+    "72": {
+      "skill_vs_trees": {
+        "mae_skill_percent": -6.158699551804192,
+        "approx_95pct_interval": [
+          -8.758285337619242,
+          -4.529492700553295
+        ],
+        "blocks": 5,
+        "block_scored_observations": 168
+      },
+      "high_wind_threshold_kmh": 16.56,
+      "high_wind_n": 41,
+      "interval_radius_kmh": 4.870981693267822,
+      "interval_coverage": 0.767379679144385,
+      "interval_mean_width_kmh": 9.740567207336426,
+      "test_n": 748
+    }
+  },
+  "seeds": [
+    11,
+    23
+  ],
+  "test_uses_tree_inputs": false,
+  "script_sha256": "4f2c2972e7f9523316c53f95b40d753184eba8f428d828ed009953631654f50f"
+}
