@@ -1,0 +1,58 @@
+{
+  "checks": {
+    "unit_tests_passed": 32,
+    "actual_gpu_forward_backward_batch": 256,
+    "forecast_replay_matches_saved_predictions_at": "2026-02-01 00:00:00 UTC",
+    "replay_tolerance_kmh": 0.0001
+  },
+  "artifacts": {
+    "reports/wind_neural/checkpoints/refit_bilstm_11.pt": {
+      "bytes": 248188,
+      "sha256": "f8e85713b6c3f55274611507ffb6c6265cb648566935858cebcdeb491dfb486e"
+    },
+    "reports/wind_neural/checkpoints/refit_bilstm_23.pt": {
+      "bytes": 248188,
+      "sha256": "e128fe9dff27e557d219ac9c81d759396740579113998103b3d4fc7ac8bba963"
+    },
+    "reports/wind_neural/refit_preprocessing.joblib": {
+      "bytes": 10971,
+      "sha256": "be3d8d5b4b5fb4dd6f19baccbf43a6889fa829958d2ce018268c5d99fdbab8ac"
+    },
+    "reports/wind_neural/selection.json": {
+      "bytes": 9373,
+      "sha256": "9e079d0e05fcfdfda66df42ba9e57374c894140381e9c614f5924c25ae984576"
+    },
+    "reports/wind_neural/metrics.json": {
+      "bytes": 4422,
+      "sha256": "21e28bf4a44882734dbc198c14f56ca6140094a109960e20afd405060fa54e64"
+    },
+    "reports/wind_neural/exemple_prevision.json": {
+      "bytes": 693,
+      "sha256": "275cde2098f18ed67a42b90bea561bb2db94165ad6a05da62f9e028060a595ec"
+    },
+    "reports/wind_neural/predictions_24h.csv": {
+      "bytes": 134810,
+      "sha256": "946a675061d56495a650745cc5cb6e531de4c24f2bef30f062b05792abab6f5c"
+    },
+    "reports/wind_neural/predictions_48h.csv": {
+      "bytes": 135233,
+      "sha256": "df3cd61e2f65ac20b0f2d03d998a27ba69b3f168171d7754a37344a3e91f5154"
+    },
+    "reports/wind_neural/predictions_72h.csv": {
+      "bytes": 134889,
+      "sha256": "18f3de003c3d1b11868f832874627617c4cbffa4bcaeb77fc506445181a1ee79"
+    },
+    "reports/wind_advanced/predictions_24h.csv": {
+      "bytes": 113402,
+      "sha256": "9b7b0893b310a2bb2cd583a85b1b46209adce122df5f1cae374cb01e01db1c90"
+    },
+    "reports/wind_advanced/predictions_48h.csv": {
+      "bytes": 113740,
+      "sha256": "82cbfc2b9f68ddceb3a122b1e8305201e5475ffebd654176006f0bd5ba18cd97"
+    },
+    "reports/wind_advanced/predictions_72h.csv": {
+      "bytes": 113377,
+      "sha256": "6ce26f10e6b84db2c4cdf02b979e6434133500aad47548fe3acd8265c6f06b9e"
+    }
+  }
+}
