@@ -1,40 +1,40 @@
-# AI_m-t-o
+# AI_m-t-o — Wind Forecasting
 
-Projet de prévision du vent à **Saint-Étienne** : réseau de neurones récurrent à **+24 / +48 / +72 h**, comparé à une baseline de correction météo par arbres. L'ancien BiGRU à +1 h est conservé séparément.
+Wind forecasting for **Saint-Étienne**: a recurrent neural network at **+24 / +48 / +72 h**, compared against a tree-based weather-correction baseline. The earlier +1 h BiGRU is kept separately.
 
-## État actuel : un BiLSTM entraîné, baseline pas encore dépassée
+## Where this stands: a trained BiLSTM that does not beat the baseline
 
-Trois architectures récurrentes ont été entraînées avec deux graines chacune : **BiGRU**, **BiLSTM**, **BiGRU avec attention**. Un contrôle neutralise la séquence tout en conservant les variables historiques du contexte. Le meilleur candidat récurrent sur validation 2025 est le **BiLSTM**, avec 72 h d'historique et trois sorties directes. Aucun résultat des arbres ne sert d'entrée ou de cible neuronale.
+Three recurrent architectures were trained with two seeds each: **BiGRU**, **BiLSTM**, and **BiGRU with attention**. A control neutralises the sequence while keeping the context's history variables. The best recurrent candidate on 2025 validation is the **BiLSTM**, with 72 h of history and three direct outputs. No tree result is used as a neural input or target.
 
-Sur les **748 mêmes cibles** par échéance du 4 janvier au 4 février 2026 :
+On the **same 748 targets** per lead time, 4 January to 4 February 2026:
 
-| Échéance | MAE arbres | MAE BiLSTM | RMSE arbres | RMSE BiLSTM |
+| Lead time | Tree MAE | BiLSTM MAE | Tree RMSE | BiLSTM RMSE |
 | --- | ---: | ---: | ---: | ---: |
-| +24 h | **2,76** | 2,86 | **3,54** | 3,65 |
-| +48 h | **3,08** | 3,22 | **3,88** | 4,07 |
-| +72 h | **3,11** | 3,30 | **3,90** | 4,12 |
+| +24 h | **2.76** | 2.86 | **3.54** | 3.65 |
+| +48 h | **3.08** | 3.22 | **3.88** | 4.07 |
+| +72 h | **3.11** | 3.30 | **3.90** | 4.12 |
 
-Unités : **km/h**. Le BiLSTM améliore la météo brute de 17,3 / 14,2 / 9,8 % en MAE, mais perd face aux arbres. L'attention n'améliore pas la validation ; l'apport de la séquence supplémentaire n'est pas démontré par l'ablation. Les résultats négatifs sont conservés.
+Units: **km/h**. The BiLSTM improves on the raw weather forecast by 17.3 / 14.2 / 9.8 % MAE, but loses to the trees. Attention does not improve validation, and the ablation does not demonstrate that the extra sequence contributes anything. The negative results are kept.
 
-**Le mois 2026 avait déjà été consulté : cette comparaison est rétrospective, sur un test réutilisé et hivernal.** Elle ne garantit pas les performances sur d'autres saisons. La sélection du réseau et de ses époques a été commitée avant le calcul de ses scores 2026.
+**The 2026 month had already been looked at: this comparison is retrospective, on a reused and wintry test set.** It does not guarantee performance in other seasons. The network and its epochs were selected and committed before its 2026 scores were computed.
 
-[Rapport complet](reports/wind_neural/RAPPORT.md) · [Architecture et références](reports/wind_neural/ARCHITECTURE.md) · [Protocole préalable](reports/wind_neural/PROTOCOLE.md) · [Courbes d'apprentissage](reports/wind_neural/apprentissage.png)
+[Full report, in French](reports/wind_neural/RAPPORT.md) · [Architecture and references, in French](reports/wind_neural/ARCHITECTURE.md) · [Pre-registered protocol, in French](reports/wind_neural/PROTOCOLE.md) · [Learning curves](reports/wind_neural/apprentissage.png)
 
-![Résultats réels du modèle neuronal](reports/wind_neural/resultats_24_48_72h.png)
+![Measured results of the neural model: MAE and RMSE at +24, +48 and +72 hours for the tree baseline, the neural ensemble and the raw weather forecast, with observed and predicted wind over the first common week](reports/wind_neural/resultats_24_48_72h.png)
 
-## Exécuter l'expérience neuronale
+## Running the neural experiment
 
-Environnement testé : **Python 3.12**, PyTorch 2.8.0 CUDA 12.6, NVIDIA GTX 1650 Max-Q. Python **3.11 minimum** pour le nouveau pipeline. Le CPU est également supporté. Utiliser un environnement Linux distinct de celui de Windows, même lorsque les sources sont sur le même SSD.
+Tested environment: **Python 3.12**, PyTorch 2.8.0 CUDA 12.6, NVIDIA GTX 1650 Max-Q. Python **3.11 minimum** for the new pipeline. CPU is also supported. Use a Linux environment separate from the Windows one, even when the sources sit on the same SSD.
 
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
-# Construction GPU testée sur cette machine
+# GPU build tested on this machine
 python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu126
 python -m pip install -r requirements-neural.txt
 ```
 
-Pour une installation CPU, remplacer l'index PyTorch par `https://download.pytorch.org/whl/cpu`. Placer à la racine les deux exports Météo-France décrits plus bas. Sur une nouvelle copie, récupérer les archives météo avant d'entraîner :
+For a CPU install, replace the PyTorch index with `https://download.pytorch.org/whl/cpu`. Place the two Météo-France exports described below at the repository root. On a fresh copy, fetch the weather archives before training:
 
 ```bash
 python analysis/fetch_nwp_archive.py
@@ -46,28 +46,28 @@ python analysis/plot_wind_neural.py
 python -m unittest discover -s tests -v
 ```
 
-Les commandes réutilisent les caches téléchargés. Les petites tables de prédictions des arbres sont versionnées pour figer les cas comparés. Les phases neuronales remplacent les artefacts existants : copier le dossier de résultats avant une nouvelle expérience.
+The commands reuse the downloaded caches. The small tables of tree predictions are versioned so that the compared cases stay fixed. The neural phases overwrite existing artefacts: copy the results directory before starting a new experiment.
 
-Le pipeline réindexe les observations heure par heure, masque les cibles manquantes, apprend les normalisations sur l'apprentissage uniquement et purge les frontières temporelles jusqu'à +72 h. Les bulletins météo conservent une marge de disponibilité de 24 h ; le réseau apprend leur correction locale.
+The pipeline reindexes observations hour by hour, masks missing targets, learns the normalisations on training data only, and purges the temporal boundaries out to +72 h. The weather bulletins keep a 24 h availability margin; the network learns their local correction.
 
-Après entraînement, rejouer une émission historique :
+After training, replay a historical issue time:
 
 ```bash
 python analysis/train_wind_neural.py --predict-at 2026-02-01T00:00:00Z
 ```
 
-Cette émission prévoit les vitesses aux **2, 3 et 4 février à 00:00 UTC**. Un graphique présentant des centaines d'heures juxtapose des émissions successives ; il n'est pas une unique prévision de cette durée. Les sorties actuelles sont la vitesse du vent, pas les rafales ni la direction.
+That issue time forecasts the wind speeds for **2, 3 and 4 February at 00:00 UTC**. A chart showing hundreds of hours juxtaposes successive issue times; it is not one single forecast of that length. The current outputs are wind speed, not gusts and not direction.
 
-| Fichier | Rôle |
+| File | Role |
 | --- | --- |
-| `analysis/neural_data.py` | Séquences causales, dates, masques, normalisations |
-| `analysis/neural_models.py` | BiGRU, BiLSTM, attention et correction positive |
-| `analysis/train_wind_neural.py` | Sélection, réentraînement, calibration, évaluation et rejeu |
-| `analysis/plot_wind_neural.py` | Graphiques calculés à partir des résultats |
-| `reports/wind_neural/` | Protocole, rapports, métriques, historiques et prédictions |
-| `tests/test_neural_*.py` | Contrôles de causalité, modèles et entraînement |
+| `analysis/neural_data.py` | Causal sequences, dates, masks, normalisations |
+| `analysis/neural_models.py` | BiGRU, BiLSTM, attention and positive correction |
+| `analysis/train_wind_neural.py` | Selection, refit, calibration, evaluation and replay |
+| `analysis/plot_wind_neural.py` | Charts computed from the results |
+| `reports/wind_neural/` | Protocol, reports, metrics, histories and predictions |
+| `tests/test_neural_*.py` | Causality, model and training checks |
 
-Les poids et normalisations sont **locaux et ignorés par Git**. Un clone neuf doit les recréer en entraînant. Les checkpoints sauvegardent leur configuration ; `selection.json` fixe les graines/époques et `run_config.json` les empreintes du code et des données. Le rejeu utilise les archives présentes : **aucun service de prévision en direct n'est encore implémenté**.
+Weights and normalisations are **local and Git-ignored**. A fresh clone has to recreate them by training. Checkpoints save their configuration; `selection.json` fixes the seeds and epochs, and `run_config.json` fixes the code and data fingerprints. Replay uses the archives that are present: **no live forecasting service is implemented yet**.
 
 ## Frozen tree baseline at +24 / +48 / +72 hours
 

@@ -26,7 +26,7 @@ LABELS = {
     "bigru": "BiGRU",
     "bilstm": "BiLSTM",
     "bigru_attention": "BiGRU + attention",
-    "history_ablation": "Historique séquentiel neutralisé",
+    "history_ablation": "Sequence history neutralised",
 }
 COLORS = {
     "bigru": "#007f86",
@@ -35,9 +35,9 @@ COLORS = {
     "history_ablation": "#64748b",
 }
 METHODS = {
-    "Tree baseline": ("Baseline arbres", "#6653aa"),
-    "Neural ensemble": ("Ensemble neuronal", "#007f86"),
-    "Raw NWP": ("Prévisions météo brutes", "#c48719"),
+    "Tree baseline": ("Tree baseline", "#6653aa"),
+    "Neural ensemble": ("Neural ensemble", "#007f86"),
+    "Raw NWP": ("Raw weather forecast", "#c48719"),
 }
 INK = "#172554"
 MUTED = "#475569"
@@ -74,7 +74,7 @@ def finite_values(values, description: str) -> np.ndarray:
 def validation_plot(directory: Path) -> list[Path]:
     source = directory / "validation_candidates.json"
     if not source.exists():
-        print("Validation : résultats absents, graphique différé.")
+        print("Validation: results missing, chart skipped.")
         return []
     candidates = read_json(source)
     names = [name for name in CANDIDATES if name in candidates]
@@ -86,7 +86,7 @@ def validation_plot(directory: Path) -> list[Path]:
     fig, axes = plt.subplots(1, 2, figsize=(15, 7.2), facecolor="#f8fafc")
     fig.subplots_adjust(top=.76, bottom=.24, left=.065, right=.975, wspace=.20)
     for ax, metric, title in zip(axes, ("mae_kmh", "rmse_kmh"),
-                               ("MAE · erreur absolue moyenne", "RMSE · grandes erreurs pénalisées")):
+                               ("MAE · mean absolute error", "RMSE · large errors penalised")):
         for name in names:
             values = finite_values([candidates[name]["validation_scores"][str(h)][metric]
                                     for h in HORIZONS], f"{name} / {metric}")
@@ -94,23 +94,23 @@ def validation_plot(directory: Path) -> list[Path]:
             ax.plot(HORIZONS, values, marker="o", color=COLORS[name],
                     linestyle="--" if name == "history_ablation" else "-",
                     linewidth=2.8 if name == selected else 1.8, label=label)
-        ax.set(title=title, xlabel="Échéance (heures)", ylabel="Erreur (km/h)", xticks=HORIZONS)
+        ax.set(title=title, xlabel="Lead time (hours)", ylabel="Error (km/h)", xticks=HORIZONS)
         style_axes(ax)
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(.5, .115),
                ncol=2, frameon=False, fontsize=10)
-    fig.text(.065, .94, "Quel réseau apprend la meilleure correction locale ?",
+    fig.text(.065, .94, "Which network learns the best local correction?",
              fontsize=22, weight="bold", color=INK)
-    fig.text(.065, .886, "Validation 2025 · mêmes observations et prévisions météo · moyenne de deux graines",
+    fig.text(.065, .886, "2025 validation · same observations and weather forecasts · mean of two seeds",
              fontsize=12, color=MUTED)
     if selection:
-        status = f"Réseau retenu : {LABELS.get(selected, selected)} · choix effectué avant le calcul des résultats neuronaux de 2026."
+        status = f"Selected network: {LABELS.get(selected, selected)} · chosen before the 2026 neural results were computed."
     else:
-        status = "Comparaison partielle : sélection pas encore figée."
+        status = "Partial comparison: selection not yet frozen."
     fig.text(.065, .832, status, fontsize=10.5, color=MUTED)
-    fig.text(.065, .075, "Critère de sélection : moyenne des MAE et RMSE normalisées par la climatologie, sur les trois échéances.",
+    fig.text(.065, .075, "Selection criterion: mean of MAE and RMSE normalised by climatology, across the three lead times.",
              fontsize=10, color=MUTED)
-    fig.text(.065, .04, "Ablation : la séquence est neutralisée ; le contexte conserve des variables historiques. Ce contrôle n’est pas éligible au choix final.",
+    fig.text(.065, .04, "Ablation: the sequence is neutralised while the context keeps its history variables. This control is not eligible for final selection.",
              fontsize=9.5, color=MUTED)
     return save_figure(fig, directory, "validation_architectures")
 
@@ -118,7 +118,7 @@ def validation_plot(directory: Path) -> list[Path]:
 def learning_plot(directory: Path) -> list[Path]:
     runs = [read_json(path) for path in sorted(directory.glob("history_*.json"))]
     if not runs:
-        print("Apprentissage : historiques absents, graphique différé.")
+        print("Training: histories missing, chart skipped.")
         return []
     names = [name for name in CANDIDATES if any(run["candidate"] == name for run in runs)]
     if not names:
@@ -147,20 +147,20 @@ def learning_plot(directory: Path) -> list[Path]:
                 axes[row, col].scatter([best_epoch], [best], s=48, color=color,
                                         marker="D", zorder=4)
             label = LABELS[name]
-            for col, subtitle in enumerate(("perte d’entraînement", "critère de validation")):
-                axes[row, col].set(title=f"{label} · {subtitle}", xlabel="Époque",
-                                    ylabel="Perte sans unité" if col == 0 else "Erreur / climatologie")
+            for col, subtitle in enumerate(("training loss", "validation criterion")):
+                axes[row, col].set(title=f"{label} · {subtitle}", xlabel="Epoch",
+                                    ylabel="Unitless loss" if col == 0 else "Error / climatology")
                 style_axes(axes[row, col])
         axes[row, 0].legend(frameon=False, fontsize=9)
         axes[row, 1].legend(frameon=False, fontsize=9)
-    fig.text(.07, 1 - .48 / fig.get_figheight(), "Apprentissage des réseaux · détail de chaque graine",
+    fig.text(.07, 1 - .48 / fig.get_figheight(), "Network training · every seed shown",
              fontsize=23, weight="bold", color=INK)
     fig.text(.07, 1 - .91 / fig.get_figheight(),
-             "Sélection sur 2025 · les losanges indiquent l’époque retenue pour chaque entraînement",
+             "Selected on 2025 · diamonds mark the epoch kept for each run",
              fontsize=12, color=MUTED)
-    fig.text(.07, .052, "Perte : erreur quadratique + 0,2 × erreur absolue, après division de l’erreur par 5 km/h.",
+    fig.text(.07, .052, "Loss: squared error + 0.2 × absolute error, after dividing the error by 5 km/h.",
              fontsize=10, color=MUTED)
-    fig.text(.07, .026, "Validation : MAE/RMSE relatives à la climatologie, moyennées sur +24/+48/+72 h. Les courbes utilisent deux échelles différentes.",
+    fig.text(.07, .026, "Validation: MAE/RMSE relative to climatology, averaged over +24/+48/+72 h. The two panels use different scales.",
              fontsize=10, color=MUTED)
     return save_figure(fig, directory, "apprentissage")
 
@@ -198,7 +198,7 @@ def read_predictions(directory: Path) -> tuple[dict[int, pd.DataFrame], pd.Datet
 def results_plot(directory: Path) -> list[Path]:
     source = directory / "metrics.json"
     if not source.exists():
-        print("Évaluation rétrospective : résultats absents, graphique différé.")
+        print("Retrospective evaluation: results missing, chart skipped.")
         return []
     metrics = read_json(source)
     scores = pd.DataFrame(metrics["scores"]).set_index(["method", "horizon_hours"])
@@ -208,8 +208,8 @@ def results_plot(directory: Path) -> list[Path]:
     fig = plt.figure(figsize=(15, 16.5), facecolor="#f8fafc")
     grid = fig.add_gridspec(4, 2, top=.865, bottom=.125, left=.07, right=.97,
                            hspace=.67, wspace=.23)
-    for col, (metric, title) in enumerate((("mae_kmh", "MAE · erreur absolue moyenne"),
-                                          ("rmse_kmh", "RMSE · grandes erreurs pénalisées"))):
+    for col, (metric, title) in enumerate((("mae_kmh", "MAE · mean absolute error"),
+                                          ("rmse_kmh", "RMSE · large errors penalised"))):
         ax = fig.add_subplot(grid[0, col])
         for method, (label, color) in METHODS.items():
             values = finite_values([scores.loc[(method, h), metric] for h in HORIZONS], metric)
@@ -219,7 +219,7 @@ def results_plot(directory: Path) -> list[Path]:
                     ax.annotate(f"{value:.2f}", (horizon, value), xytext=(0, 8),
                                 textcoords="offset points", ha="center", color=color, weight="bold")
         ax.margins(y=.17)
-        ax.set(title=title, xlabel="Échéance (heures)", ylabel="Erreur (km/h)", xticks=HORIZONS)
+        ax.set(title=title, xlabel="Lead time (hours)", ylabel="Error (km/h)", xticks=HORIZONS)
         style_axes(ax)
         if col == 0:
             ax.legend(frameon=False, fontsize=9)
@@ -231,36 +231,36 @@ def results_plot(directory: Path) -> list[Path]:
         ax = fig.add_subplot(grid[row, :])
         data = frames[horizon].loc[sample]
         ax.fill_between(data.index, data.neural_lower80_kmh, data.neural_upper80_kmh,
-                        color=METHODS["Neural ensemble"][1], alpha=.12, label="Intervalle neuronal nominal 80 %")
-        ax.plot(data.index, data.observed_kmh, color=INK, linewidth=1.8, label="Vent observé")
+                        color=METHODS["Neural ensemble"][1], alpha=.12, label="Neural 80% nominal interval")
+        ax.plot(data.index, data.observed_kmh, color=INK, linewidth=1.8, label="Observed wind")
         ax.plot(data.index, data.selected_kmh, color=METHODS["Tree baseline"][1],
-                linewidth=1.3, alpha=.8, label="Baseline arbres")
+                linewidth=1.3, alpha=.8, label="Tree baseline")
         ax.plot(data.index, data.raw_nwp_kmh, color=METHODS["Raw NWP"][1],
-                linewidth=1.1, alpha=.8, label="Prévisions météo brutes")
+                linewidth=1.1, alpha=.8, label="Raw weather forecast")
         ax.plot(data.index, data.neural_kmh, color=METHODS["Neural ensemble"][1],
-                linewidth=1.8, label="Ensemble neuronal")
-        ax.set(title=f"Échéance +{horizon} h · même première semaine commune", ylabel="Vent (km/h)")
+                linewidth=1.8, label="Neural ensemble")
+        ax.set(title=f"Lead time +{horizon} h · same first common week", ylabel="Wind speed (km/h)")
         ax.set_ylim(0, wind_max * 1.12)
         ax.xaxis.set_major_locator(mdates.DayLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m"))
-        ax.set_xlabel("Date observée (UTC)")
+        ax.set_xlabel("Observation time (UTC)")
         style_axes(ax)
         if row == 1:
             ax.legend(frameon=False, ncol=3, fontsize=8.5, loc="upper left")
     selected = LABELS.get(metrics["selected"], metrics["selected"])
-    dates = f"{sample.min():%d/%m/%Y} au {sample.max():%d/%m/%Y}"
+    dates = f"{sample.min():%Y-%m-%d} to {sample.max():%Y-%m-%d}"
     counts = ", ".join(f"+{h} h : {metrics['horizons'][str(h)]['test_n']}" for h in HORIZONS)
-    fig.text(.07, .96, "Prévision du vent · réseau neuronal face à la baseline",
+    fig.text(.07, .96, "Wind forecasting · neural network against the baseline",
              fontsize=23, weight="bold", color=INK)
-    fig.text(.07, .934, "SAINT-ÉTIENNE · test 2026 réutilisé · comparaison rétrospective", fontsize=13, color=MUTED)
-    fig.text(.07, .910, f"{selected}, ensemble de deux graines · choix du réseau et des époques sur 2025", fontsize=11, color=MUTED)
-    fig.text(.07, .888, f"MAE/RMSE sur tous les cas de la baseline ({counts}). Traces : {dates}.", fontsize=10.5, color=MUTED)
-    fig.text(.07, .074, "Traces fixées aux sept premiers jours communs. Chaque point résulte d’une nouvelle émission (date observée − échéance).",
+    fig.text(.07, .934, "SAINT-ÉTIENNE · reused 2026 test · retrospective comparison", fontsize=13, color=MUTED)
+    fig.text(.07, .910, f"{selected}, two-seed ensemble · network and epochs chosen on 2025", fontsize=11, color=MUTED)
+    fig.text(.07, .888, f"MAE/RMSE over every baseline case ({counts}). Traces: {dates}.", fontsize=10.5, color=MUTED)
+    fig.text(.07, .074, "Traces fixed to the first seven common days. Each point comes from a separate issue time (observation time minus lead time).",
              fontsize=10, color=MUTED)
     coverage = " ; ".join(f"+{h} h : {metrics['horizons'][str(h)]['interval_coverage']:.1%}" for h in HORIZONS)
-    fig.text(.07, .053, f"Intervalles calibrés fin 2025 ; couverture observée sur le test : {coverage}. Le niveau nominal 80 % n’est pas une garantie.",
+    fig.text(.07, .053, f"Intervals calibrated in late 2025; observed coverage on the test: {coverage}. The nominal 80% level is not a guarantee.",
              fontsize=9.5, color=MUTED)
-    fig.text(.07, .032, "Test court, hivernal et déjà consulté : ces résultats ne démontrent pas une généralisation à de nouvelles saisons.",
+    fig.text(.07, .032, "Short, wintry, already-viewed test: these results do not demonstrate generalisation to other seasons.",
              fontsize=10, color=MUTED)
     return save_figure(fig, directory, "resultats_24_48_72h")
 
