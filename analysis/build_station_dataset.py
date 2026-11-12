@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import hashlib
 import json
 from pathlib import Path
@@ -62,39 +63,56 @@ def station_array(frame):
     return int(start), grid
 
 
+def build_department(department, paths, out):
+    """Write the department's eligible series; return its metadata rows (cached for resume)."""
+    cache = out / "meta" / f"{department}.json"
+    if cache.exists():
+        cached = json.loads(cache.read_text())
+        if cached["sources"] == {p.name: p.stat().st_size for p in paths}:
+            return department, cached["rows"]
+    raw = read_department(paths)
+    rows = []
+    for station, frame in ([] if raw is None else raw.groupby("NUM_POSTE")):
+        start, grid = station_array(frame.sort_values("AAAAMMJJHH"))
+        present = np.isfinite(grid)
+        if not present.any():
+            continue
+        counts = dict(zip(VARIABLES, present.sum(axis=0).tolist()))
+        saved = all(counts[name] >= MIN_HOURS for name in REQUIRED)
+        if saved:
+            np.save(out / "series" / f"{station}.npy", grid)
+        last = frame.iloc[-1]
+        row = {"station": station, "name": last.NOM_USUEL, "department": department,
+               "lat": float(last.LAT), "lon": float(last.LON), "alt": float(last.ALTI),
+               "start": str(EPOCH + pd.Timedelta(hours=start)),
+               "end": str(EPOCH + pd.Timedelta(hours=start + len(grid) - 1)), "hours": len(grid),
+               "series_saved": saved}
+        row.update({f"{name}_present": int(present[:, i].sum()) for i, name in enumerate(VARIABLES)})
+        rows.append(row)
+    cache.write_text(json.dumps({"sources": {p.name: p.stat().st_size for p in paths}, "rows": rows}))
+    return department, rows
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-dir", type=Path, default=ROOT / "data/meteofrance_france")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "data/stations")
+    parser.add_argument("--workers", type=int, default=3, help="Departments built in parallel (~2 GB RAM each)")
     args = parser.parse_args()
     out = args.output_dir
     (out / "series").mkdir(parents=True, exist_ok=True)
+    (out / "meta").mkdir(exist_ok=True)
     by_department = defaultdict(list)
     for path in sorted(args.input_dir.glob("H_*_*.csv.gz")):
         by_department[path.name.split("_")[1]].append(path)
-    meta = []
-    for department, paths in sorted(by_department.items()):
-        raw = read_department(paths)
-        if raw is None:
-            continue
-        for station, frame in raw.groupby("NUM_POSTE"):
-            start, grid = station_array(frame.sort_values("AAAAMMJJHH"))
-            present = np.isfinite(grid)
-            if not present.any():
-                continue
-            counts = dict(zip(VARIABLES, present.sum(axis=0).tolist()))
-            saved = all(counts[name] >= MIN_HOURS for name in REQUIRED)
-            if saved:
-                np.save(out / "series" / f"{station}.npy", grid)
-            last = frame.iloc[-1]
-            row = {"station": station, "name": last.NOM_USUEL, "department": department,
-                   "lat": float(last.LAT), "lon": float(last.LON), "alt": float(last.ALTI),
-                   "start": str(EPOCH + pd.Timedelta(hours=start)),
-                   "end": str(EPOCH + pd.Timedelta(hours=start + len(grid) - 1)), "hours": len(grid),
-                   "series_saved": saved}
-            row.update({f"{name}_present": int(present[:, i].sum()) for i, name in enumerate(VARIABLES)})
-            meta.append(row)
-        print(f"Department {department}: {raw.NUM_POSTE.nunique()} stations, {len(meta)} total", flush=True)
+    results = {}
+    with ProcessPoolExecutor(args.workers) as pool:
+        jobs = [pool.submit(build_department, d, paths, out) for d, paths in sorted(by_department.items())]
+        for job in as_completed(jobs):
+            department, rows = job.result()
+            results[department] = rows
+            print(f"Department {department}: {len(rows)} stations ({len(results)}/{len(jobs)} departments)", flush=True)
+    meta = [row for department in sorted(results) for row in results[department]]
     table = pd.DataFrame(meta)
     table.to_csv(out / "stations.csv", index=False)
     (out / "README.json").write_text(json.dumps({

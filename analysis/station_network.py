@@ -445,8 +445,11 @@ def devices():
     """Compute on the GPU; keep station arrays there too only if it has room (>= 12 GB)."""
     if not torch.cuda.is_available():
         return torch.device("cpu"), torch.device("cpu")
-    gpu = torch.device("cuda")
-    big = torch.cuda.get_device_properties(0).total_memory >= 12 * 1024 ** 3
+    # With an external GPU next to the laptop one, use the card with the most memory.
+    index = max(range(torch.cuda.device_count()), key=lambda i: torch.cuda.get_device_properties(i).total_memory)
+    torch.cuda.set_device(index)
+    gpu = torch.device("cuda", index)
+    big = torch.cuda.get_device_properties(index).total_memory >= 12 * 1024 ** 3
     return gpu, gpu if big else torch.device("cpu")
 
 

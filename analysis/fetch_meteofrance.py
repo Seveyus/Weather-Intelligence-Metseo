@@ -13,6 +13,7 @@ Example:
 from __future__ import annotations
 
 import argparse
+import gzip
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -30,14 +31,28 @@ PERIODS = ("previous-2020-2024", "latest-2025-2026")
 OLDER_PERIODS = ("2000-2009", "2010-2019")
 
 
-def download(url: str, path: Path) -> None:
-    request = Request(url, headers={"User-Agent": "AI-m-t-o-research/1.0"})
-    with urlopen(request, timeout=300) as response, tempfile.NamedTemporaryFile(
-            dir=path.parent, suffix=".tmp", delete=False) as handle:
-        temporary = Path(handle.name)
-        while chunk := response.read(1 << 20):
-            handle.write(chunk)
-    temporary.replace(path)
+def download(url: str, path: Path, retries: int = 3) -> None:
+    """Download to a temporary file and keep it only if the gzip stream is complete."""
+    for attempt in range(retries):
+        request = Request(url, headers={"User-Agent": "AI-m-t-o-research/1.0"})
+        with urlopen(request, timeout=300) as response, tempfile.NamedTemporaryFile(
+                dir=path.parent, suffix=".tmp", delete=False) as handle:
+            temporary = Path(handle.name)
+            while chunk := response.read(1 << 20):
+                handle.write(chunk)
+        try:
+            # A dropped connection can end the body early without raising.
+            with gzip.open(temporary, "rb") as stream:
+                while stream.read(1 << 24):
+                    pass
+        except (EOFError, OSError) as exc:
+            temporary.unlink()
+            if attempt == retries - 1:
+                raise RuntimeError(f"Incomplete download after {retries} attempts: {url}") from exc
+            print(f"Incomplete download, retrying: {url}", flush=True)
+            continue
+        temporary.replace(path)
+        return
 
 
 def main() -> None:
