@@ -1,244 +1,163 @@
-# AI_m-t-o — Wind Forecasting
+# Weather Intelligence — Metseo
 
-Wind forecasting for **Saint-Étienne**: a recurrent neural network at **+24 / +48 / +72 h**, compared against a tree-based weather-correction baseline. The earlier +1 h BiGRU is kept separately.
+Local weather forecasting for **Saint-Étienne (France)**, built around a planned weather station at Télécom Saint-Étienne.
 
-## Where this stands: a trained BiLSTM that does not beat the baseline
+The project learns from Météo-France hourly observations and archived numerical weather prediction (NWP) forecasts. It answers two questions:
 
-Three recurrent architectures were trained with two seeds each: **BiGRU**, **BiLSTM**, and **BiGRU with attention**. A control neutralises the sequence while keeping the context's history variables. The best recurrent candidate on 2025 validation is the **BiLSTM**, with 72 h of history and three direct outputs. No tree result is used as a neural input or target.
+1. **How much can a local model correct global weather forecasts for wind at +24 / +48 / +72 h?**
+2. **How far ahead can the station's own sensors forecast each variable they measure?** The sensors are SHT30 (temperature, humidity), BMP280 (pressure), an anemometer with a vane (wind, direction, gusts) and a tipping-bucket rain gauge.
 
-On the **same 748 targets** per lead time, 4 January to 4 February 2026:
+Every experiment follows a protocol written before training. Each final model is chosen on validation data and scored once on a held-out test period. Negative results are kept.
 
-| Lead time | Tree MAE | BiLSTM MAE | Tree RMSE | BiLSTM RMSE |
+---
+
+## Key results
+
+### 1. Multi-source wind correction: the main result
+
+Test: **5,652 shared target hours, 8 February to 21 October 2026**. No earlier study had used this period. Errors are MAE in km/h ([full report](reports/wind_multisource/RAPPORT.md), in French).
+
+| Lead time | Raw NWP (mean of 6 models) | A · station + 4 NWP models | B · + 6 models × 10 variables | C · + neighbouring stations |
 | --- | ---: | ---: | ---: | ---: |
-| +24 h | **2.76** | 2.86 | **3.54** | 3.65 |
-| +48 h | **3.08** | 3.22 | **3.88** | 4.07 |
-| +72 h | **3.11** | 3.30 | **3.90** | 4.12 |
+| +24 h | 3.22 | 2.72 | 2.68 | **2.66** |
+| +48 h | 3.25 | 2.81 | **2.76** | 2.77 |
+| +72 h | 3.35 | 2.97 | **2.93** | 2.93 |
 
-Units: **km/h**. The BiLSTM improves on the raw weather forecast by 17.3 / 14.2 / 9.8 % MAE, but loses to the trees. Attention does not improve validation, and the ablation does not demonstrate that the extra sequence contributes anything. The negative results are kept.
+- **The local correction holds across seasons.** It improves on raw NWP by **17.1 / 15.0 / 12.6 %** MAE. Weekly-block bootstrap intervals exclude zero.
+- **More NWP models and variables help a little, consistently:** B has 1.5–1.7 % lower MAE than A at every lead time.
+- **Neighbouring stations add almost nothing** beyond +24 h.
+- **80 % intervals are well calibrated:** measured coverage is 81–82 %.
+- **Strong winds are still underestimated:** the bias is −5 to −7 km/h above the 90th percentile.
 
-**The 2026 month had already been looked at: this comparison is retrospective, on a reused and wintry test set.** It does not guarantee performance in other seasons. The network and its epochs were selected and committed before its 2026 scores were computed.
+![Multi-source benchmark results](reports/wind_multisource/resultats_multisource.png)
 
-[Full report, in French](reports/wind_neural/RAPPORT.md) · [Architecture and references, in French](reports/wind_neural/ARCHITECTURE.md) · [Pre-registered protocol, in French](reports/wind_neural/PROTOCOLE.md) · [Learning curves](reports/wind_neural/apprentissage.png)
+### 2. Sensor-only forecasting horizons
 
-![Measured results of the neural model: MAE and RMSE at +24, +48 and +72 hours for the tree baseline, the neural ensemble and the raw weather forecast, with observed and predicted wind over the first common week](reports/wind_neural/resultats_24_48_72h.png)
+One gradient-boosted model is trained per variable and lead time, using **only the variables the station will measure**. It learns from the SAINT-ETIENNE record from 2000 onwards and is tested from February 2024 to October 2026 ([metrics](reports/sensor_horizons/metrics.json)). MAE, except rain, which uses the Brier score:
 
-## Running the neural experiment
+| Variable | +1 h | +6 h | +24 h | +72 h | Raw NWP at +24 h |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Wind speed (km/h) | 2.51 | 3.40 | 3.80 | 3.95 | 3.33 |
+| Gusts (km/h) | 3.93 | 6.73 | 8.41 | 8.90 | 8.76 |
+| Temperature (°C) | 0.56 | 1.37 | 2.23 | 3.24 | 1.46 |
+| Humidity (%) | 3.09 | 7.16 | 10.28 | 12.17 | 7.37 |
+| Pressure (hPa) | 0.22 | 0.89 | 2.99 | 4.99 | — |
+| Rain in the hour (Brier) | 0.045 | 0.066 | 0.073 | 0.076 | 0.072 |
 
-Tested environment: **Python 3.12**, PyTorch 2.8.0 CUDA 12.6, NVIDIA GTX 1650 Max-Q. Python **3.11 minimum** for the new pipeline. CPU is also supported. Use a Linux environment separate from the Windows one, even when the sources sit on the same SSD.
+**Sensors alone are excellent at very short range and beat persistence at every lead time.** From about +24 h, raw NWP forecasts become better for temperature, humidity and wind. Past that point, a local station needs NWP inputs.
+
+![Sensor horizons](reports/sensor_horizons/horizons_capteurs.png)
+
+### 3. Earlier studies
+
+| Study | Result | Report |
+| --- | --- | --- |
+| Frozen tree baseline, winter 2026 (748 h) | MAE 2.76 / 3.08 / 3.11 km/h at +24 / 48 / 72 h | [wind_advanced](reports/wind_advanced/RAPPORT.md) |
+| BiGRU / BiLSTM / attention networks | The best network, a BiLSTM, **does not beat** the tree baseline (2.86 / 3.22 / 3.30) | [wind_neural](reports/wind_neural/RAPPORT.md) |
+| Station-only wind, +1 to +24 h (2025) | Direct boosted trees against persistence and the seasonal mean | [wind_24h](reports/wind_24h/REPORT.md) |
+| Original +1 h BiGRU | MAE 2.670 km/h, persistence 2.699: a marginal gain | [checkpoints/metrics.json](checkpoints/metrics.json) |
+
+The winter 2026 figures are **not comparable** with the multi-source test: the periods and wind regimes differ.
+
+---
+
+## Repository layout
+
+```text
+analysis/
+  fetch_meteofrance.py           Download Météo-France hourly exports (data.gouv.fr) with SHA-256 provenance
+  fetch_nwp_archive.py           Archived NWP forecasts from the Open-Meteo Previous Runs API
+  fetch_gefs.py                  NOAA GEFS v12 reforecast / operational control runs (byte-range GRIB)
+  build_station_dataset.py       Compact multi-station dataset of the station's sensor variables
+  benchmark_wind_multisource.py  Multi-source wind benchmark (select / evaluate phases)
+  sensor_horizon_study.py        Sensor-only forecasts of every variable, +1 to +72 h
+  station_network.py             Sensor-only model learned on the Météo-France network (in progress)
+  train_wind_advanced.py         Frozen tree baseline at +24 / +48 / +72 h
+  train_wind_neural.py           BiGRU / BiLSTM / attention selection, refit, evaluation, replay
+  neural_data.py, neural_models.py
+  plot_*.py                      Charts computed from committed results only
+reports/                         Protocols, reports, metrics, frozen predictions and charts
+tests/                           Causality, leakage, model and pipeline checks
+import_data.py, dataset.py,
+model.py, train.py               Original +1 h BiGRU pipeline (kept for reference)
+```
+
+Reports are written in French. Code, comments and charts are in English.
+
+---
+
+## Setup
+
+Python **3.11+** (tested with 3.12).
 
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
-# GPU build tested on this machine
-python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu126
+python -m pip install --upgrade pip
+python -m pip install -r requirements-wind.txt      # tree models and benchmarks
+```
+
+For the neural experiments, also install PyTorch for your platform, then the neural requirements:
+
+```bash
+python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu126   # or .../whl/cpu
 python -m pip install -r requirements-neural.txt
 ```
 
-For a CPU install, replace the PyTorch index with `https://download.pytorch.org/whl/cpu`. Place the two Météo-France exports described below at the repository root. On a fresh copy, fetch the weather archives before training:
+Do not share one virtual environment between Windows and Linux.
+
+## Data
+
+Raw data is **not versioned**. It is downloaded into `data/`, which Git ignores:
 
 ```bash
-python analysis/fetch_nwp_archive.py
-python analysis/fetch_nwp_archive.py --horizons 96 --output-dir reports/wind_advanced/data/day4
-python analysis/train_wind_neural.py --phase select
-python analysis/train_wind_neural.py --phase refit
-python analysis/train_wind_neural.py --phase evaluate
-python analysis/plot_wind_neural.py
+python analysis/fetch_meteofrance.py        # departments 42, 69, 43, 63
+python analysis/fetch_nwp_archive.py --start 2024-01-01 --end 2026-10-21 --horizons 48 72 96 \
+  --models ecmwf_ifs025 icon_global icon_eu gfs_global gem_global jma_seamless \
+  --variables wind_speed_10m wind_direction_10m temperature_2m surface_pressure wind_gusts_10m \
+              wind_speed_100m pressure_msl relative_humidity_2m cloud_cover precipitation \
+  --output-dir data/nwp_multisource
+```
+
+Input fingerprints are recorded in each `metrics.json`. Météo-France's "latest" export grows every day, so refreshing it changes the inputs.
+
+## Reproducing the experiments
+
+```bash
+# Multi-source wind benchmark (~45 min selection + ~10 min evaluation on 4 CPU threads)
+python analysis/benchmark_wind_multisource.py --phase select
+python analysis/benchmark_wind_multisource.py --phase evaluate
+python analysis/plot_wind_multisource.py
+
+# Sensor-only horizons
+python analysis/sensor_horizon_study.py
+python analysis/plot_sensor_horizons.py
+
+# Tests
 python -m unittest discover -s tests -v
 ```
 
-The commands reuse the downloaded caches. The small tables of tree predictions are versioned so that the compared cases stay fixed. The neural phases overwrite existing artefacts: copy the results directory before starting a new experiment.
+The `evaluate` phase refuses to run if the protocol or the script changed after `selection.json` was written. For the earlier baselines and neural networks, see the commands in their reports.
 
-The pipeline reindexes observations hour by hour, masks missing targets, learns the normalisations on training data only, and purges the temporal boundaries out to +72 h. The weather bulletins keep a 24 h availability margin; the network learns their local correction.
+---
 
-After training, replay a historical issue time:
+## Limitations
 
-```bash
-python analysis/train_wind_neural.py --predict-at 2026-02-01T00:00:00Z
-```
+- **Short NWP history.** The Open-Meteo Previous Runs archive starts in January 2024, which leaves about two years of training for NWP-correcting models.
+- **Publication delays are approximated.** Archive offsets follow model initialisation time, with a conservative 24 h margin. Historical outages are not reconstructed.
+- **Point forecasts only.** Each model gives one grid point, with no neighbouring cells, and AROME / ARPEGE archives are empty.
+- **Not the future station's sensors.** Models learn from Météo-France instruments and siting, so the Télécom station will need calibration. Pressure comes from Bouthéon, 13 km away.
+- **No live service yet.** The models replay historical issue times; they do not fetch current observations.
 
-That issue time forecasts the wind speeds for **2, 3 and 4 February at 00:00 UTC**. A chart showing hundreds of hours juxtaposes successive issue times; it is not one single forecast of that length. The current outputs are wind speed, not gusts and not direction.
+## Roadmap
 
-| File | Role |
-| --- | --- |
-| `analysis/neural_data.py` | Causal sequences, dates, masks, normalisations |
-| `analysis/neural_models.py` | BiGRU, BiLSTM, attention and positive correction |
-| `analysis/train_wind_neural.py` | Selection, refit, calibration, evaluation and replay |
-| `analysis/plot_wind_neural.py` | Charts computed from the results |
-| `reports/wind_neural/` | Protocol, reports, metrics, histories and predictions |
-| `tests/test_neural_*.py` | Causality, model and training checks |
+1. Extend the NWP history with the NOAA GEFS reforecast (`fetch_gefs.py`).
+2. Correct strong-wind underestimation with quantile losses or validated weighting.
+3. Learn sensor-only models on the whole Météo-France network ([protocol](reports/station_network/PROTOCOLE.md)), then re-evaluate neural networks on the same split.
+4. Connect the Télécom Saint-Étienne station and serve live forecasts.
 
-Weights and normalisations are **local and Git-ignored**. A fresh clone has to recreate them by training. Checkpoints save their configuration; `selection.json` fixes the seeds and epochs, and `run_config.json` fixes the code and data fingerprints. Replay uses the archives that are present: **no live forecasting service is implemented yet**.
+## Data sources
 
-## Frozen tree baseline at +24 / +48 / +72 hours
-
-The new pipeline compares PCA + Ridge, Ridge, boosted trees, raw forecasts and forecast ensembles. Models are selected on January–September 2025, uncertainty intervals calibrated on October–December 2025, and final errors measured on January 4–February 4, 2026 (748 shared observations).
-
-| Horizon | Raw NWP reference MAE | Selected model MAE | Selected model RMSE |
-| --- | ---: | ---: | ---: |
-| +24 h | 3.46 km/h | **2.76 km/h** | **3.54 km/h** |
-| +48 h | 3.76 km/h | **3.08 km/h** | **3.88 km/h** |
-| +72 h | 3.66 km/h | **3.11 km/h** | **3.90 km/h** |
-
-The selected models combine direct and residual gradient boosting using ECMWF, ICON Global, ICON Europe and GFS forecast inputs. PCA was tested and slightly improved linear validation scores, but was not part of the selected ensembles.
-
-Archived NWP offsets use initialization rather than actual publication time. This experiment conservatively uses 48/72/96-hour archive offsets for 24/48/72-hour predictions, allowing a full day for forecast availability. The same restriction applies to the raw NWP reference. Historical publication outages are not verified. These are **short winter-test results**, not a year-round operational guarantee; comparison with the older GRU's different test period would be misleading.
-
-[Detailed report in French](reports/wind_advanced/RAPPORT.md) · [Results chart](reports/wind_advanced/resultats_24_48_72h.png)
-
-```bash
-python -m pip install -r requirements-wind.txt
-python analysis/fetch_nwp_archive.py
-python analysis/fetch_nwp_archive.py --horizons 96 --output-dir reports/wind_advanced/data/day4
-python analysis/train_wind_advanced.py
-python analysis/plot_wind_advanced.py
-python -m unittest discover -s tests -p "test_wind_advanced.py" -v
-```
-
-With the raw observation CSVs and cached forecasts present, replay a historical forecast using the saved models:
-
-```bash
-python analysis/train_wind_advanced.py --predict-at 2026-02-01T00:00:00Z
-```
-
-This returns three point forecasts and calibrated intervals for the specified historical issue time. It does not fetch current station observations or provide a live forecast service. Models, preprocessing and feature schema are saved in `reports/wind_advanced/wind_models.joblib`; downloaded data and that artifact are ignored by Git.
-
-## Original GRU: what the model predicts
-
-The original training configuration is:
-
-| Setting | Value | Meaning |
-| --- | ---: | --- |
-| `window` | 24 | Use the previous 24 observations as input |
-| `horizon` | 1 | Predict the next observation |
-| Source frequency | Hourly | Consecutive rows are normally one hour apart |
-
-Therefore, the original checkpoint is a **one-hour-ahead model using about 24 hours of history**.
-
-For an input window ending at time `t`, `make_windows()` selects the target one row later when `horizon=1`:
-
-```text
-input:  t-23, t-22, ..., t
-target: t+1
-```
-
-This is not an 80-hour or 300-hour forecast. For example, `pred_vs_real.png` displays 300 consecutive test targets. Each point is a separate one-hour forecast made from its own overlapping 24-hour input window; the chart spans about 300 hours of the test set.
-
-Features such as `PSTAT_diff3`, `FF_lag3`, and three-row rolling averages look back three observations. They do **not** change the forecast horizon. To predict about three hours ahead with hourly data, set `horizon` to `3` and retrain the model.
-
-The older source file contains a few missing-hour gaps. Because preprocessing does not reindex or validate the timeline, a small number of adjacent rows are more than one hour apart. Thus, `horizon=1` means exactly “next available row” and normally means one hour.
-
-## Original GRU pipeline
-
-1. `import_data.py` reads the two raw semicolon-separated Météo-France exports.
-2. It selects `SAINT-ETIENNE`, fills missing station pressure from `ST ETIENNE-BOUTHEON`, converts wind speeds from m/s to km/h, and creates calendar, direction, difference, rolling, and lag features.
-3. It writes `dataset_clean.csv`.
-4. `dataset.py` converts speed and direction into the targets:
-
-   ```text
-   wind_u = FF * cos(direction)
-   wind_v = FF * sin(direction)
-   ```
-
-5. The rows are split chronologically into 70% training, 15% validation, and 15% test sets. `StandardScaler` instances are fitted only on the training split.
-6. `train.py` trains the GRU, keeps the checkpoint with the best validation loss, evaluates the test split, compares it with a persistence baseline, and writes plots and metrics under `checkpoints/`.
-
-The original model has two bidirectional GRU layers, a hidden size of 128, dropout of 0.2, layer normalization, and a two-value regression head for `(wind_u, wind_v)`. Bidirectional processing only runs across the 24 historical input rows; it does not expose the model to the future target. Training uses AdamW, MSE loss, automatic mixed precision on CUDA, gradient clipping, learning-rate reduction, and early stopping. CPU execution is supported automatically.
-
-## Original GRU recorded result
-
-The committed `checkpoints/metrics.json` records the following test result:
-
-| Metric | GRU | Persistence baseline |
-| --- | ---: | ---: |
-| Wind-speed MAE | **2.670 km/h** | 2.699 km/h |
-| Wind-speed RMSE | **3.535 km/h** | 3.606 km/h |
-
-The GRU improves MAE by about 1.1% and RMSE by about 2.0% over the persistence baseline. This is a small improvement, so the project should still be treated as an experiment rather than a production forecast system.
-
-The best validation MSE for standardized `(u, v)` targets was `0.3166`. The recorded run used `cuda:1`, 60 maximum epochs, batch size 2048, and seed 42.
-
-## Data required
-
-These files must be placed at the repository root:
-
-```text
-H_42_previous-2020-2024.csv
-H_42_latest-2025-2026.csv
-```
-
-They are intentionally excluded from Git, as is the generated `dataset_clean.csv`. The files inspected for the current project contain hourly Saint-Etienne observations from January 2020 through February 4, 2026.
-
-For the original GRU pipeline, the local `dataset_clean.csv` must be regenerated before training. The new +24/+48/+72 h pipelines read the raw exports directly and do not use this file. The copy currently present on the development SSD was produced by an older preprocessing version and has 18 model inputs, while the current preprocessing code and committed GRU checkpoint use 31 inputs.
-
-## Installation
-
-For the original GRU, Python 3.10 or newer is recommended. The new neural experiment above requires Python 3.11 or newer.
-
-### Linux
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-### Windows PowerShell
-
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-The default PyTorch package can run on CPU. For NVIDIA GPU training, install the PyTorch build matching the machine's CUDA setup, then install the remaining requirements.
-
-Do not share one virtual environment between Windows and Linux. Create a separate environment for each operating system.
-
-## Run the original one-hour GRU
-
-Generate the current feature set:
-
-```bash
-python import_data.py
-```
-
-Train and evaluate the model:
-
-```bash
-python train.py
-```
-
-The main settings, including `window` and `horizon`, are in the `CONFIG` dictionary at the top of `train.py`. Changing either setting requires retraining.
-
-Training creates or updates:
-
-```text
-checkpoints/gru_wind_best.pth
-checkpoints/loss_curve.png
-checkpoints/pred_vs_real.png
-checkpoints/metrics.json
-```
-
-## Repository files
-
-| Path | Purpose |
-| --- | --- |
-| `import_data.py` | Raw-data cleaning and feature engineering |
-| `dataset.py` | Scaling, temporal splitting, and sequence-window creation |
-| `model.py` | Current bidirectional GRU definition |
-| `train.py` | Training, validation, test evaluation, plots, and metrics |
-| `checkpoints/gru_wind_best.pth` | Current GRU state dictionary |
-| `checkpoints/metrics.json` | Configuration and recorded evaluation metrics |
-| `model_wind_v1.pth` | Older model checkpoint kept for reference |
-| `résultat_entrainement.txt` | Older training output kept for reference |
-
-## Limitations specific to the original GRU
-
-- The saved checkpoint contains model weights only. Feature and target scalers are rebuilt from the dataset and are not saved with the checkpoint.
-- There is no inference command yet for supplying the latest observations and producing a dated forecast.
-- Timestamps are removed from `dataset_clean.csv`, so training does not reject windows that cross a missing-hour gap.
-- The evaluation tests one-step forecasts with observed history. It does not evaluate recursive multi-hour forecasting.
-- Wind-direction metrics are not currently reported, even though the model predicts vector components.
-- `model_wind_v1.pth`, `Entrainemen_2.png`, and `résultat_entrainement.txt` describe an older experiment and should not be confused with the files under `checkpoints/`.
+- Météo-France, *Données climatologiques de base — horaires*, via [data.gouv.fr](https://www.data.gouv.fr/)
+- [Open-Meteo Previous Runs API](https://open-meteo.com/en/docs/previous-runs-api)
+- NOAA GEFS v12 on AWS Open Data (`noaa-gefs-retrospective`, `noaa-gefs-pds`)
