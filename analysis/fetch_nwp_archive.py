@@ -35,7 +35,9 @@ ENDPOINT = "https://previous-runs-api.open-meteo.com/v1/forecast"
 DOCUMENTATION = "https://open-meteo.com/en/docs/previous-runs-api"
 DEFAULT_MODELS = ("ecmwf_ifs025", "icon_global", "icon_eu", "gfs_global")
 VARIABLES = ("wind_speed_10m", "wind_direction_10m", "temperature_2m", "surface_pressure")
-UNITS = dict(zip(VARIABLES, ("m/s", "°", "°C", "hPa")))
+EXTRA_VARIABLES = ("wind_gusts_10m", "wind_speed_100m", "pressure_msl", "relative_humidity_2m",
+                   "cloud_cover", "precipitation")
+UNITS = dict(zip(VARIABLES + EXTRA_VARIABLES, ("m/s", "°", "°C", "hPa", "m/s", "m/s", "hPa", "%", "%", "mm")))
 HORIZONS = (24, 48, 72)
 
 
@@ -46,7 +48,10 @@ def display_path(path: Path) -> str:
 def station_metadata() -> dict:
     """Read the station identity from observations, without inferring coordinates."""
     source = ROOT / "H_42_previous-2020-2024.csv"
-    with source.open(newline="", encoding="utf-8-sig") as handle:
+    if not source.exists():
+        source = ROOT / "data/meteofrance/H_42_previous-2020-2024.csv.gz"
+    opener = gzip.open if source.suffix == ".gz" else open
+    with opener(source, "rt", newline="", encoding="utf-8-sig") as handle:
         for row in csv.DictReader(handle, delimiter=";"):
             if row["NOM_USUEL"] == "SAINT-ETIENNE":
                 return {
@@ -118,6 +123,8 @@ def main() -> None:
     parser.add_argument("--models", nargs="+", default=list(DEFAULT_MODELS))
     parser.add_argument("--horizons", nargs="+", type=int, choices=range(24, 169, 24), default=list(HORIZONS),
                         help="Archive offsets in hours, not an operational publication timestamp")
+    parser.add_argument("--variables", nargs="+", choices=list(UNITS), default=list(VARIABLES),
+                        help="Hourly variables; models lacking one return empty values, never substitutes")
     parser.add_argument("--workers", type=int, choices=range(1, 5), default=3)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "reports/wind_advanced/data")
     args = parser.parse_args()
@@ -125,6 +132,7 @@ def main() -> None:
         parser.error("--end must be on or after --start")
     args.output_dir = args.output_dir.resolve()
     args.horizons = sorted(set(args.horizons))
+    variables = tuple(dict.fromkeys(args.variables))
     station = station_metadata()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     provenance = {
@@ -135,7 +143,7 @@ def main() -> None:
         "end": args.end.isoformat(),
         "models": args.models,
         "horizon_hours": args.horizons,
-        "variable_units": UNITS,
+        "variable_units": {variable: UNITS[variable] for variable in variables},
         "time_zone": "UTC",
         "source_type": "archived forecasts; not reanalysis or future observations",
         "lead_time_semantics": (
@@ -192,7 +200,7 @@ def main() -> None:
     csv_path = args.output_dir / "nwp_archive.csv"
     pending = csv_path.with_suffix(".csv.tmp")
     provenance_path = args.output_dir / "provenance.json"
-    fieldnames = ["valid_time", "forecast_origin", "model", "horizon_hours", *VARIABLES]
+    fieldnames = ["valid_time", "forecast_origin", "model", "horizon_hours", *variables]
     rows_total = 0
     try:
         with ThreadPoolExecutor(max_workers=args.workers) as executor, pending.open("w", newline="", encoding="utf-8") as handle:
@@ -206,7 +214,7 @@ def main() -> None:
                     "elevation": station["elevation"],
                     "start_date": start.isoformat(),
                     "end_date": end.isoformat(),
-                    "hourly": ",".join(f"{variable}_previous_day{h // 24}" for h in args.horizons for variable in VARIABLES),
+                    "hourly": ",".join(f"{variable}_previous_day{h // 24}" for h in args.horizons for variable in variables),
                     "models": ",".join(args.models),
                     "wind_speed_unit": "ms",
                     "temperature_unit": "celsius",
@@ -231,16 +239,18 @@ def main() -> None:
                         coverage = provenance["coverage"].setdefault(coverage_key, {
                             "rows": 0, "wind_nonmissing": 0, "all_variables_nonmissing": 0,
                             "first_wind_valid_time": None, "last_wind_valid_time": None,
-                            "variable_nonmissing": dict.fromkeys(VARIABLES, 0),
+                            "variable_nonmissing": dict.fromkeys(variables, 0),
                         })
                         values = {}
-                        for variable in VARIABLES:
+                        for variable in variables:
                             key = f"{variable}_previous_day{horizon // 24}"
                             if len(args.models) > 1:
                                 key += f"_{model}"
-                            if payload["hourly_units"].get(key) != UNITS[variable]:
-                                raise ValueError(f"Unexpected unit for {key}: {payload['hourly_units'].get(key)}")
-                            values[variable] = hourly[key]
+                            unit = payload["hourly_units"].get(key)
+                            unsupported = unit in (None, "undefined") and all(v is None for v in hourly.get(key, [None]))
+                            if unit != UNITS[variable] and not unsupported:
+                                raise ValueError(f"Unexpected unit for {key}: {unit}")
+                            values[variable] = hourly.get(key) or [None] * len(times)
                             if len(values[variable]) != len(times):
                                 raise ValueError(f"Mismatched time/variable lengths for {key}")
                         for index, stamp in enumerate(times):
@@ -250,14 +260,14 @@ def main() -> None:
                                 "forecast_origin": (valid - timedelta(hours=horizon)).isoformat(),
                                 "model": model,
                                 "horizon_hours": horizon,
-                                **{variable: values[variable][index] for variable in VARIABLES},
+                                **{variable: values[variable][index] for variable in variables},
                             }
                             writer.writerow(row)
                             rows_total += 1
                             coverage["rows"] += 1
-                            for variable in VARIABLES:
+                            for variable in variables:
                                 coverage["variable_nonmissing"][variable] += row[variable] is not None
-                            coverage["all_variables_nonmissing"] += all(row[v] is not None for v in VARIABLES)
+                            coverage["all_variables_nonmissing"] += all(row[v] is not None for v in VARIABLES if v in row)
                             if row["wind_speed_10m"] is not None:
                                 coverage["wind_nonmissing"] += 1
                                 if coverage["first_wind_valid_time"] is None:

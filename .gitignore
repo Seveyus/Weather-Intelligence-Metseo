@@ -19,3 +19,9 @@ H_42_previous-2020-2024.csv
 # Small evaluation tables freeze the exact scored cases (not training data).
 !/reports/wind_advanced/predictions_*h.csv
 !/reports/wind_neural/predictions_*h.csv
+
+# Multi-source benchmark: downloaded station exports, NWP archive and caches
+/data/
+/reports/wind_multisource/*.log
+!/reports/wind_multisource/predictions_*h.csv
+!/reports/wind_multisource/all_scores.csv
