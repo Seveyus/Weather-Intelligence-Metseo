@@ -1,0 +1,73 @@
+Reading H_42_2000-2009.csv.gz
+Reading H_42_2010-2019.csv.gz
+Reading H_42_previous-2020-2024.csv.gz
+Reading H_42_latest-2025-2026.csv.gz
+T +1h: train=170202 validation choice 400 it
+T +3h: train=170200 validation choice 400 it
+T +6h: train=170197 validation choice 400 it
+T +12h: train=170191 validation choice 400 it
+T +24h: train=170179 validation choice 200 it
+T +48h: train=170155 validation choice 200 it
+T +72h: train=170131 validation choice 200 it
+U +1h: train=169647 validation choice 400 it
+U +3h: train=169645 validation choice 400 it
+U +6h: train=169642 validation choice 400 it
+U +12h: train=169636 validation choice 400 it
+U +24h: train=169624 validation choice 200 it
+U +48h: train=169600 validation choice 200 it
+U +72h: train=169576 validation choice 100 it
+PSTAT +1h: train=169478 validation choice 400 it
+PSTAT +3h: train=169476 validation choice 400 it
+PSTAT +6h: train=169473 validation choice 400 it
+PSTAT +12h: train=169467 validation choice 400 it
+PSTAT +24h: train=169455 validation choice 200 it
+PSTAT +48h: train=169431 validation choice 100 it
+PSTAT +72h: train=169407 validation choice 100 it
+FF +1h: train=169586 validation choice 100 it
+FF +3h: train=169584 validation choice 200 it
+FF +6h: train=169581 validation choice 100 it
+FF +12h: train=169575 validation choice 100 it
+FF +24h: train=169563 validation choice 100 it
+FF +48h: train=169539 validation choice 100 it
+FF +72h: train=169515 validation choice 100 it
+FXI +1h: train=166698 validation choice 400 it
+FXI +3h: train=166696 validation choice 400 it
+FXI +6h: train=166693 validation choice 400 it
+FXI +12h: train=166687 validation choice 400 it
+FXI +24h: train=166675 validation choice 100 it
+FXI +48h: train=166651 validation choice 100 it
+FXI +72h: train=166627 validation choice 100 it
+RAIN +1h: train=167213 validation choice 400 it
+RAIN +3h: train=167211 validation choice 100 it
+RAIN +6h: train=167208 validation choice 100 it
+RAIN +12h: train=167202 validation choice 100 it
+RAIN +24h: train=167190 validation choice 100 it
+RAIN +48h: train=167166 validation choice 100 it
+RAIN +72h: train=167142 validation choice 100 it
+horizon_hours                                 1      3      6      12     24     48     72
+variable method                                                                           
+FF       Capteurs seuls (arbres)            2.51   3.08   3.40   3.65   3.80   3.91   3.95
+         Moyenne saisonnière                4.00   4.00   4.00   4.00   4.00   4.00   4.00
+         Open-Meteo brut (moy. 6 modèles)    NaN    NaN    NaN    NaN   3.33   3.40   3.49
+         Persistance                        2.76   3.72   4.39   4.98   4.95   5.17   5.19
+FXI      Capteurs seuls (arbres)            3.93   5.78   6.73   7.64   8.41   8.82   8.90
+         Moyenne saisonnière                9.00   9.00   9.00   9.00   9.00   9.00   9.00
+         Open-Meteo brut (moy. 6 modèles)    NaN    NaN    NaN    NaN   8.76   9.04   9.24
+         Persistance                        4.60   7.31   9.49  11.54  11.17  11.93  12.16
+PSTAT    Capteurs seuls (arbres)            0.22   0.49   0.89   1.67   2.99   4.45   4.99
+         Moyenne saisonnière                5.47   5.47   5.47   5.47   5.47   5.47   5.47
+         Persistance                        0.33   0.84   1.42   2.22   3.52   5.13   5.93
+T        Capteurs seuls (arbres)            0.56   0.99   1.37   1.78   2.23   2.90   3.24
+         Moyenne saisonnière                3.77   3.77   3.77   3.77   3.77   3.77   3.77
+         Open-Meteo brut (moy. 6 modèles)    NaN    NaN    NaN    NaN   1.46   1.57   1.68
+         Persistance                        0.83   2.01   3.44   4.70   2.67   3.58   3.95
+U        Capteurs seuls (arbres)            3.09   5.39   7.16   8.85  10.28  11.46  12.17
+         Moyenne saisonnière               13.04  13.04  13.04  13.04  13.04  13.04  13.04
+         Open-Meteo brut (moy. 6 modèles)    NaN    NaN    NaN    NaN   7.37   7.84   8.45
+         Persistance                        3.75   8.20  13.16  17.56  12.38  14.46  15.35
+horizon_hours                         1       3       6       12      24      48      72
+method                                                                                  
+Capteurs seuls (arbres)           0.0450  0.0610  0.0662  0.0701  0.0726  0.0751  0.0760
+Moyenne saisonnière               0.0756  0.0756  0.0756  0.0756  0.0756  0.0756  0.0756
+Open-Meteo brut (moy. 6 modèles)     NaN     NaN     NaN     NaN  0.0723  0.0761  0.0840
+Persistance                       0.0691  0.1012  0.1169  0.1349  0.1450  0.1443  0.1450

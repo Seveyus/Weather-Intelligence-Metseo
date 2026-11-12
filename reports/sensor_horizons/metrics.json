@@ -1,0 +1,1805 @@
+{
+  "study": "Sensor-only forecasts of every station variable, +1 to +72 h, against raw Open-Meteo at +24/+48/+72 h",
+  "inputs": "SAINT-ETIENNE T, U, FF, DD, FXI, RR1 and BOUTHEON PSTAT history; calendar of the target hour",
+  "split": {
+    "train_targets_before": "2022-01-01 00:00:00",
+    "validation": "2022-01-01 to 2023-12-28 (iterations only)",
+    "refit_targets_before": "2024-01-01 00:00:00",
+    "test_targets_from": "2024-01-04 00:00:00"
+  },
+  "rain_definition": "RR1 >= 0.2 mm during the target hour; probability scored with the Brier score",
+  "nwp": "Open-Meteo Previous Runs, archive offset = lead + 24 h, mean of 6 models; rain probability = share of models with >= 0.2 mm",
+  "test_hours": "same verifying hours for all methods and leads of a variable; restricted to hours with Open-Meteo counterpart available (2024-2026)",
+  "limitations": [
+    "2025 and early 2026 were inspected in earlier wind studies; this is not a never-viewed test",
+    "Météo-France sensors and siting, not the future station's: calibration still needed",
+    "Pressure comes from Bouthéon (13 km, 395 m), not the target station",
+    "Open-Meteo values are point forecasts with no local correction here"
+  ],
+  "variables": {
+    "T": {
+      "label": "Température",
+      "unit": "°C",
+      "test_n": 23117,
+      "test_start": "2024-02-07 00:00:00",
+      "test_end": "2026-10-21 23:00:00",
+      "horizons": {
+        "1": {
+          "selected_iterations": 400,
+          "train_n": 170202,
+          "refit_n": 187722
+        },
+        "3": {
+          "selected_iterations": 400,
+          "train_n": 170200,
+          "refit_n": 187720
+        },
+        "6": {
+          "selected_iterations": 400,
+          "train_n": 170197,
+          "refit_n": 187717
+        },
+        "12": {
+          "selected_iterations": 400,
+          "train_n": 170191,
+          "refit_n": 187711
+        },
+        "24": {
+          "selected_iterations": 200,
+          "train_n": 170179,
+          "refit_n": 187699
+        },
+        "48": {
+          "selected_iterations": 200,
+          "train_n": 170155,
+          "refit_n": 187675
+        },
+        "72": {
+          "selected_iterations": 200,
+          "train_n": 170131,
+          "refit_n": 187651
+        }
+      }
+    },
+    "U": {
+      "label": "Humidité relative",
+      "unit": "%",
+      "test_n": 22709,
+      "test_start": "2024-03-04 00:00:00",
+      "test_end": "2026-10-21 23:00:00",
+      "horizons": {
+        "1": {
+          "selected_iterations": 400,
+          "train_n": 169647,
+          "refit_n": 187167
+        },
+        "3": {
+          "selected_iterations": 400,
+          "train_n": 169645,
+          "refit_n": 187165
+        },
+        "6": {
+          "selected_iterations": 400,
+          "train_n": 169642,
+          "refit_n": 187162
+        },
+        "12": {
+          "selected_iterations": 400,
+          "train_n": 169636,
+          "refit_n": 187156
+        },
+        "24": {
+          "selected_iterations": 200,
+          "train_n": 169624,
+          "refit_n": 187144
+        },
+        "48": {
+          "selected_iterations": 200,
+          "train_n": 169600,
+          "refit_n": 187120
+        },
+        "72": {
+          "selected_iterations": 100,
+          "train_n": 169576,
+          "refit_n": 187096
+        }
+      }
+    },
+    "PSTAT": {
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "test_n": 24492,
+      "test_start": "2024-01-04 00:00:00",
+      "test_end": "2026-10-22 04:00:00",
+      "horizons": {
+        "1": {
+          "selected_iterations": 400,
+          "train_n": 169478,
+          "refit_n": 186972
+        },
+        "3": {
+          "selected_iterations": 400,
+          "train_n": 169476,
+          "refit_n": 186970
+        },
+        "6": {
+          "selected_iterations": 400,
+          "train_n": 169473,
+          "refit_n": 186967
+        },
+        "12": {
+          "selected_iterations": 400,
+          "train_n": 169467,
+          "refit_n": 186961
+        },
+        "24": {
+          "selected_iterations": 200,
+          "train_n": 169455,
+          "refit_n": 186949
+        },
+        "48": {
+          "selected_iterations": 100,
+          "train_n": 169431,
+          "refit_n": 186925
+        },
+        "72": {
+          "selected_iterations": 100,
+          "train_n": 169407,
+          "refit_n": 186901
+        }
+      }
+    },
+    "FF": {
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "test_n": 23189,
+      "test_start": "2024-02-07 00:00:00",
+      "test_end": "2026-10-21 23:00:00",
+      "horizons": {
+        "1": {
+          "selected_iterations": 100,
+          "train_n": 169586,
+          "refit_n": 187081
+        },
+        "3": {
+          "selected_iterations": 200,
+          "train_n": 169584,
+          "refit_n": 187079
+        },
+        "6": {
+          "selected_iterations": 100,
+          "train_n": 169581,
+          "refit_n": 187076
+        },
+        "12": {
+          "selected_iterations": 100,
+          "train_n": 169575,
+          "refit_n": 187070
+        },
+        "24": {
+          "selected_iterations": 100,
+          "train_n": 169563,
+          "refit_n": 187058
+        },
+        "48": {
+          "selected_iterations": 100,
+          "train_n": 169539,
+          "refit_n": 187034
+        },
+        "72": {
+          "selected_iterations": 100,
+          "train_n": 169515,
+          "refit_n": 187010
+        }
+      }
+    },
+    "FXI": {
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "test_n": 23981,
+      "test_start": "2024-01-22 12:00:00",
+      "test_end": "2026-10-21 23:00:00",
+      "horizons": {
+        "1": {
+          "selected_iterations": 400,
+          "train_n": 166698,
+          "refit_n": 184204
+        },
+        "3": {
+          "selected_iterations": 400,
+          "train_n": 166696,
+          "refit_n": 184202
+        },
+        "6": {
+          "selected_iterations": 400,
+          "train_n": 166693,
+          "refit_n": 184199
+        },
+        "12": {
+          "selected_iterations": 400,
+          "train_n": 166687,
+          "refit_n": 184193
+        },
+        "24": {
+          "selected_iterations": 100,
+          "train_n": 166675,
+          "refit_n": 184181
+        },
+        "48": {
+          "selected_iterations": 100,
+          "train_n": 166651,
+          "refit_n": 184157
+        },
+        "72": {
+          "selected_iterations": 100,
+          "train_n": 166627,
+          "refit_n": 184133
+        }
+      }
+    },
+    "RAIN": {
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "test_n": 22323,
+      "test_start": "2024-02-06 22:00:00",
+      "test_end": "2026-10-21 23:00:00",
+      "horizons": {
+        "1": {
+          "selected_iterations": 400,
+          "train_n": 167213,
+          "refit_n": 184493
+        },
+        "3": {
+          "selected_iterations": 100,
+          "train_n": 167211,
+          "refit_n": 184491
+        },
+        "6": {
+          "selected_iterations": 100,
+          "train_n": 167208,
+          "refit_n": 184488
+        },
+        "12": {
+          "selected_iterations": 100,
+          "train_n": 167202,
+          "refit_n": 184482
+        },
+        "24": {
+          "selected_iterations": 100,
+          "train_n": 167190,
+          "refit_n": 184470
+        },
+        "48": {
+          "selected_iterations": 100,
+          "train_n": 167166,
+          "refit_n": 184446
+        },
+        "72": {
+          "selected_iterations": 100,
+          "train_n": 167142,
+          "refit_n": 184422
+        }
+      }
+    }
+  },
+  "scores": [
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 1,
+      "method": "Persistance",
+      "mae": 0.828260587446468,
+      "rmse": 1.163477721470199,
+      "bias": 0.0003330882034866118,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 1,
+      "method": "Moyenne saisonnière",
+      "mae": 3.769559766821553,
+      "rmse": 4.613527388457642,
+      "bias": -1.2159398190115573,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 1,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 0.5621795731117217,
+      "rmse": 0.8323837607462636,
+      "bias": -0.026133148152030536,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 3,
+      "method": "Persistance",
+      "mae": 2.0123329151706537,
+      "rmse": 2.6846500100277666,
+      "bias": 6.48873123675225e-05,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 3,
+      "method": "Moyenne saisonnière",
+      "mae": 3.769559766821553,
+      "rmse": 4.613527388457642,
+      "bias": -1.2159398190115573,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 3,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 0.9851317637474121,
+      "rmse": 1.3873998124110143,
+      "bias": -0.08292181491740828,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 6,
+      "method": "Persistance",
+      "mae": 3.4354068434485443,
+      "rmse": 4.422088971769834,
+      "bias": 0.00037634641173162314,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 6,
+      "method": "Moyenne saisonnière",
+      "mae": 3.769559766821553,
+      "rmse": 4.613527388457642,
+      "bias": -1.2159398190115573,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 6,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 1.372309048407084,
+      "rmse": 1.8650620503355664,
+      "bias": -0.18311393379425983,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 12,
+      "method": "Persistance",
+      "mae": 4.703149197560237,
+      "rmse": 5.882654723434517,
+      "bias": 0.0020980230998832077,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 12,
+      "method": "Moyenne saisonnière",
+      "mae": 3.769559766821553,
+      "rmse": 4.613527388457642,
+      "bias": -1.2159398190115573,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 12,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 1.7787285616120445,
+      "rmse": 2.3399875993542083,
+      "bias": -0.27568234842203165,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 24,
+      "method": "Persistance",
+      "mae": 2.6660855647359085,
+      "rmse": 3.52218455720657,
+      "bias": -0.0034303759138296277,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 24,
+      "method": "Moyenne saisonnière",
+      "mae": 3.769559766821553,
+      "rmse": 4.613527388457642,
+      "bias": -1.2159398190115573,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 24,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 2.227462299878645,
+      "rmse": 2.880853889511752,
+      "bias": -0.2953822255030688,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 24,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 1.457344522789866,
+      "rmse": 1.848281509968963,
+      "bias": -0.9492480281466742,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 48,
+      "method": "Persistance",
+      "mae": 3.5813989704546443,
+      "rmse": 4.5350095228767655,
+      "bias": 0.0008219059566552655,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 48,
+      "method": "Moyenne saisonnière",
+      "mae": 3.769559766821553,
+      "rmse": 4.613527388457642,
+      "bias": -1.2159398190115573,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 48,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 2.9040742086856874,
+      "rmse": 3.6292328600910047,
+      "bias": -0.4395632299152608,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 48,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 1.5711208201756282,
+      "rmse": 1.9846795002665765,
+      "bias": -0.9811783535925943,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 72,
+      "method": "Persistance",
+      "mae": 3.9498248042566075,
+      "rmse": 4.9731135491386285,
+      "bias": -0.00495306484405415,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 72,
+      "method": "Moyenne saisonnière",
+      "mae": 3.769559766821553,
+      "rmse": 4.613527388457642,
+      "bias": -1.2159398190115573,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 72,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.235372786786906,
+      "rmse": 3.993012189026712,
+      "bias": -0.5293471176120567,
+      "n": 23117
+    },
+    {
+      "variable": "T",
+      "label": "Température",
+      "unit": "°C",
+      "horizon_hours": 72,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 1.6812468457556486,
+      "rmse": 2.142842287673729,
+      "bias": -0.9878538160949374,
+      "n": 23117
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 1,
+      "method": "Persistance",
+      "mae": 3.7478092386278568,
+      "rmse": 5.4487835477920346,
+      "bias": 0.0008366726848386102,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 1,
+      "method": "Moyenne saisonnière",
+      "mae": 13.044400701240143,
+      "rmse": 16.00208157189689,
+      "bias": 0.14534616479449083,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 1,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.0944551187111227,
+      "rmse": 4.5939879284443395,
+      "bias": -0.07904059477204547,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 3,
+      "method": "Persistance",
+      "mae": 8.201550046237175,
+      "rmse": 11.033791307555958,
+      "bias": 0.002245805627724691,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 3,
+      "method": "Moyenne saisonnière",
+      "mae": 13.044400701240143,
+      "rmse": 16.00208157189689,
+      "bias": 0.14534616479449083,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 3,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 5.389477814390877,
+      "rmse": 7.530316316088948,
+      "bias": -0.21044647786004428,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 6,
+      "method": "Persistance",
+      "mae": 13.156986216918403,
+      "rmse": 16.928932434081588,
+      "bias": 0.004579682064379761,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 6,
+      "method": "Moyenne saisonnière",
+      "mae": 13.044400701240143,
+      "rmse": 16.00208157189689,
+      "bias": 0.14534616479449083,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 6,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 7.16001330112809,
+      "rmse": 9.673209431460469,
+      "bias": -0.3348989578474067,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 12,
+      "method": "Persistance",
+      "mae": 17.560790875864196,
+      "rmse": 21.916820001706125,
+      "bias": 0.006253027434056982,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 12,
+      "method": "Moyenne saisonnière",
+      "mae": 13.044400701240143,
+      "rmse": 16.00208157189689,
+      "bias": 0.14534616479449083,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 12,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 8.846454256586465,
+      "rmse": 11.531537640541135,
+      "bias": -0.47172274938128683,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 24,
+      "method": "Persistance",
+      "mae": 12.378396230569377,
+      "rmse": 16.529730140287306,
+      "bias": 0.023999295433528557,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 24,
+      "method": "Moyenne saisonnière",
+      "mae": 13.044400701240143,
+      "rmse": 16.00208157189689,
+      "bias": 0.14534616479449083,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 24,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 10.277658476834349,
+      "rmse": 13.110631383088,
+      "bias": -0.9195773881914348,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 24,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 7.367791037327345,
+      "rmse": 9.580796414653399,
+      "bias": 0.9586434159731092,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 48,
+      "method": "Persistance",
+      "mae": 14.459729622616583,
+      "rmse": 18.844833422143946,
+      "bias": 0.012946408912765864,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 48,
+      "method": "Moyenne saisonnière",
+      "mae": 13.044400701240143,
+      "rmse": 16.00208157189689,
+      "bias": 0.14534616479449083,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 48,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 11.460972085641098,
+      "rmse": 14.393834874502813,
+      "bias": -1.0668830643600677,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 48,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 7.836393793943665,
+      "rmse": 10.14090827576591,
+      "bias": 1.1417940023779118,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 72,
+      "method": "Persistance",
+      "mae": 15.34761548284821,
+      "rmse": 19.79829037393359,
+      "bias": 0.006913558501034832,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 72,
+      "method": "Moyenne saisonnière",
+      "mae": 13.044400701240143,
+      "rmse": 16.00208157189689,
+      "bias": 0.14534616479449083,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 72,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 12.173349153490218,
+      "rmse": 15.054864242841354,
+      "bias": -0.735692188228233,
+      "n": 22709
+    },
+    {
+      "variable": "U",
+      "label": "Humidité relative",
+      "unit": "%",
+      "horizon_hours": 72,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 8.452860099520015,
+      "rmse": 10.92239216286864,
+      "bias": 1.2756469534839343,
+      "n": 22709
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 1,
+      "method": "Persistance",
+      "mae": 0.32948717948717954,
+      "rmse": 0.4405772125913652,
+      "bias": -0.0006206108116936115,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 1,
+      "method": "Moyenne saisonnière",
+      "mae": 5.473358221957119,
+      "rmse": 7.343750768063027,
+      "bias": -0.46579926111369385,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 1,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 0.22318142079714237,
+      "rmse": 0.3297354659391214,
+      "bias": 0.005764077522139548,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 3,
+      "method": "Persistance",
+      "mae": 0.839706843050792,
+      "rmse": 1.0999200080783869,
+      "bias": -0.0019067450596112895,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 3,
+      "method": "Moyenne saisonnière",
+      "mae": 5.473358221957119,
+      "rmse": 7.343750768063027,
+      "bias": -0.46579926111369385,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 3,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 0.4873696970537471,
+      "rmse": 0.6906117222231175,
+      "bias": 0.009217006934330509,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 6,
+      "method": "Persistance",
+      "mae": 1.4222439980401769,
+      "rmse": 1.8783790935125328,
+      "bias": -0.003919647231749129,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 6,
+      "method": "Moyenne saisonnière",
+      "mae": 5.473358221957119,
+      "rmse": 7.343750768063027,
+      "bias": -0.46579926111369385,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 6,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 0.8931302129271234,
+      "rmse": 1.2569813615411096,
+      "bias": 0.02771069731222604,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 12,
+      "method": "Persistance",
+      "mae": 2.223962926669933,
+      "rmse": 3.001004853759503,
+      "bias": -0.008398660787195816,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 12,
+      "method": "Moyenne saisonnière",
+      "mae": 5.473358221957119,
+      "rmse": 7.343750768063027,
+      "bias": -0.46579926111369385,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 12,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 1.665068003396575,
+      "rmse": 2.3337551440727875,
+      "bias": 0.04933150977716806,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 24,
+      "method": "Persistance",
+      "mae": 3.5206761391474766,
+      "rmse": 4.760368485415404,
+      "bias": -0.013302302792748633,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 24,
+      "method": "Moyenne saisonnière",
+      "mae": 5.473358221957119,
+      "rmse": 7.343750768063027,
+      "bias": -0.46579926111369385,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 24,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 2.986839530192941,
+      "rmse": 4.0733066630877,
+      "bias": -0.01850855096902003,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 48,
+      "method": "Persistance",
+      "mae": 5.134488812673526,
+      "rmse": 6.851767130031563,
+      "bias": -0.012612281561326133,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 48,
+      "method": "Moyenne saisonnière",
+      "mae": 5.473358221957119,
+      "rmse": 7.343750768063027,
+      "bias": -0.46579926111369385,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 48,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 4.453064986271912,
+      "rmse": 5.903061558843298,
+      "bias": -0.1880556299733885,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 72,
+      "method": "Persistance",
+      "mae": 5.93287195819043,
+      "rmse": 7.937682086936828,
+      "bias": -0.014849746856116267,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 72,
+      "method": "Moyenne saisonnière",
+      "mae": 5.473358221957119,
+      "rmse": 7.343750768063027,
+      "bias": -0.46579926111369385,
+      "n": 24492
+    },
+    {
+      "variable": "PSTAT",
+      "label": "Pression station (Bouthéon)",
+      "unit": "hPa",
+      "horizon_hours": 72,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 4.9916560494236295,
+      "rmse": 6.6480722587728005,
+      "bias": -0.28893723825314166,
+      "n": 24492
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 1,
+      "method": "Persistance",
+      "mae": 2.761500711544267,
+      "rmse": 3.723745886535112,
+      "bias": 0.00026391823709517463,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 1,
+      "method": "Moyenne saisonnière",
+      "mae": 4.000915430881682,
+      "rmse": 5.115239170604125,
+      "bias": 0.6576525768931474,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 1,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 2.510881518463475,
+      "rmse": 3.3037575198244395,
+      "bias": 0.2535336927423643,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 3,
+      "method": "Persistance",
+      "mae": 3.7189184527146484,
+      "rmse": 4.902705552052934,
+      "bias": 0.0022665919185820985,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 3,
+      "method": "Moyenne saisonnière",
+      "mae": 4.000915430881682,
+      "rmse": 5.115239170604125,
+      "bias": 0.6576525768931474,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 3,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.0847398394287207,
+      "rmse": 4.00527811391492,
+      "bias": 0.3410904774700145,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 6,
+      "method": "Persistance",
+      "mae": 4.394098926215016,
+      "rmse": 5.738761514912608,
+      "bias": 0.0031825434473241663,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 6,
+      "method": "Moyenne saisonnière",
+      "mae": 4.000915430881682,
+      "rmse": 5.115239170604125,
+      "bias": 0.6576525768931474,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 6,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.3991821524372012,
+      "rmse": 4.38838483077588,
+      "bias": 0.4160856708537456,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 12,
+      "method": "Persistance",
+      "mae": 4.978941739617922,
+      "rmse": 6.480936152137391,
+      "bias": 0.0029962482211393286,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 12,
+      "method": "Moyenne saisonnière",
+      "mae": 4.000915430881682,
+      "rmse": 5.115239170604125,
+      "bias": 0.6576525768931474,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 12,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.6460171772129137,
+      "rmse": 4.713613627972382,
+      "bias": 0.38802962700128407,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 24,
+      "method": "Persistance",
+      "mae": 4.953869507093882,
+      "rmse": 6.547140208459278,
+      "bias": -0.0002794428392772382,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 24,
+      "method": "Moyenne saisonnière",
+      "mae": 4.000915430881682,
+      "rmse": 5.115239170604125,
+      "bias": 0.6576525768931474,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 24,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.800850088376419,
+      "rmse": 4.911774918844292,
+      "bias": 0.42089206267357104,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 24,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 3.33047608780025,
+      "rmse": 4.3356547477891265,
+      "bias": -1.4140788304799692,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 48,
+      "method": "Persistance",
+      "mae": 5.1710897408253915,
+      "rmse": 6.800364016810919,
+      "bias": 0.002546034757859327,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 48,
+      "method": "Moyenne saisonnière",
+      "mae": 4.000915430881682,
+      "rmse": 5.115239170604125,
+      "bias": 0.6576525768931474,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 48,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.912357941222053,
+      "rmse": 5.017758564289788,
+      "bias": 0.5351098509297991,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 48,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 3.397750398896028,
+      "rmse": 4.437018902352517,
+      "bias": -1.4228114192073829,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 72,
+      "method": "Persistance",
+      "mae": 5.189579542024235,
+      "rmse": 6.8700216118166795,
+      "bias": 0.002033722885851042,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 72,
+      "method": "Moyenne saisonnière",
+      "mae": 4.000915430881682,
+      "rmse": 5.115239170604125,
+      "bias": 0.6576525768931474,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 72,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.9478086843371214,
+      "rmse": 5.052361373635228,
+      "bias": 0.5967678984248495,
+      "n": 23189
+    },
+    {
+      "variable": "FF",
+      "label": "Vent moyen",
+      "unit": "km/h",
+      "horizon_hours": 72,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 3.4944795377118463,
+      "rmse": 4.581185106002867,
+      "bias": -1.4531195825606968,
+      "n": 23189
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 1,
+      "method": "Persistance",
+      "mae": 4.601637963387682,
+      "rmse": 6.6204066324496536,
+      "bias": -0.0001951544973103758,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 1,
+      "method": "Moyenne saisonnière",
+      "mae": 8.998985680251026,
+      "rmse": 12.474460067167163,
+      "bias": -1.6978175654521115,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 1,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 3.9300551967038815,
+      "rmse": 5.6357622585892555,
+      "bias": -0.7769538791932756,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 3,
+      "method": "Persistance",
+      "mae": 7.308220674700805,
+      "rmse": 9.829710411402152,
+      "bias": 0.0019065093198782355,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 3,
+      "method": "Moyenne saisonnière",
+      "mae": 8.998985680251026,
+      "rmse": 12.474460067167163,
+      "bias": -1.6978175654521115,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 3,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 5.782118274245456,
+      "rmse": 7.895514780229535,
+      "bias": -0.9335136700570479,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 6,
+      "method": "Persistance",
+      "mae": 9.488186480964098,
+      "rmse": 12.497809742976068,
+      "bias": 0.0043084108252366485,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 6,
+      "method": "Moyenne saisonnière",
+      "mae": 8.998985680251026,
+      "rmse": 12.474460067167163,
+      "bias": -1.6978175654521115,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 6,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 6.729678436311779,
+      "rmse": 9.2376167277365,
+      "bias": -1.135180433842037,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 12,
+      "method": "Persistance",
+      "mae": 11.536242858929986,
+      "rmse": 15.052801521421218,
+      "bias": 0.0023418539677244415,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 12,
+      "method": "Moyenne saisonnière",
+      "mae": 8.998985680251026,
+      "rmse": 12.474460067167163,
+      "bias": -1.6978175654521115,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 12,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 7.6437449879302815,
+      "rmse": 10.643146192098348,
+      "bias": -1.539625216852497,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 24,
+      "method": "Persistance",
+      "mae": 11.170523330970354,
+      "rmse": 15.415335305425833,
+      "bias": 0.002041616279554655,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 24,
+      "method": "Moyenne saisonnière",
+      "mae": 8.998985680251026,
+      "rmse": 12.474460067167163,
+      "bias": -1.6978175654521115,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 24,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 8.411826784543981,
+      "rmse": 11.70057227095281,
+      "bias": -1.686562157895752,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 24,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 8.755595262916476,
+      "rmse": 10.942340444297058,
+      "bias": -7.231603769650974,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 48,
+      "method": "Persistance",
+      "mae": 11.929584254201242,
+      "rmse": 16.3303927152187,
+      "bias": -0.0019215212042866861,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 48,
+      "method": "Moyenne saisonnière",
+      "mae": 8.998985680251026,
+      "rmse": 12.474460067167163,
+      "bias": -1.6978175654521115,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 48,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 8.822291510404277,
+      "rmse": 12.218684176478146,
+      "bias": -1.6514861918800978,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 48,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 9.038621825611942,
+      "rmse": 11.425691249858447,
+      "bias": -7.268570535006882,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 72,
+      "method": "Persistance",
+      "mae": 12.162418581376924,
+      "rmse": 16.62636607335783,
+      "bias": 0.005013969392435598,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 72,
+      "method": "Moyenne saisonnière",
+      "mae": 8.998985680251026,
+      "rmse": 12.474460067167163,
+      "bias": -1.6978175654521115,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 72,
+      "method": "Capteurs seuls (arbres)",
+      "mae": 8.897814410782466,
+      "rmse": 12.340718298229056,
+      "bias": -1.6517889385639852,
+      "n": 23981
+    },
+    {
+      "variable": "FXI",
+      "label": "Rafale max horaire",
+      "unit": "km/h",
+      "horizon_hours": 72,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "mae": 9.237919603019057,
+      "rmse": 11.757234062133556,
+      "bias": -7.265282932321421,
+      "n": 23981
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 1,
+      "method": "Persistance",
+      "brier": 0.06912153384401738,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 1,
+      "method": "Moyenne saisonnière",
+      "brier": 0.07562762716819622,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 1,
+      "method": "Capteurs seuls (arbres)",
+      "brier": 0.04498411976699322,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 3,
+      "method": "Persistance",
+      "brier": 0.10119607579626394,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 3,
+      "method": "Moyenne saisonnière",
+      "brier": 0.07562762716819622,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 3,
+      "method": "Capteurs seuls (arbres)",
+      "brier": 0.060964407197456834,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 6,
+      "method": "Persistance",
+      "brier": 0.11691976884827308,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 6,
+      "method": "Moyenne saisonnière",
+      "brier": 0.07562762716819622,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 6,
+      "method": "Capteurs seuls (arbres)",
+      "brier": 0.06615741371714239,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 12,
+      "method": "Persistance",
+      "brier": 0.13488330421538325,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 12,
+      "method": "Moyenne saisonnière",
+      "brier": 0.07562762716819622,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 12,
+      "method": "Capteurs seuls (arbres)",
+      "brier": 0.07005191934537108,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 24,
+      "method": "Persistance",
+      "brier": 0.14496259463333783,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 24,
+      "method": "Moyenne saisonnière",
+      "brier": 0.07562762716819622,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 24,
+      "method": "Capteurs seuls (arbres)",
+      "brier": 0.07261949869565938,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 24,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "brier": 0.07230210993146083,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 48,
+      "method": "Persistance",
+      "brier": 0.14433543878510952,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 48,
+      "method": "Moyenne saisonnière",
+      "brier": 0.07562762716819622,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 48,
+      "method": "Capteurs seuls (arbres)",
+      "brier": 0.07507592643147132,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 48,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "brier": 0.07614592821554252,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 72,
+      "method": "Persistance",
+      "brier": 0.14496259463333783,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 72,
+      "method": "Moyenne saisonnière",
+      "brier": 0.07562762716819622,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 72,
+      "method": "Capteurs seuls (arbres)",
+      "brier": 0.07599098241225687,
+      "n": 22323
+    },
+    {
+      "variable": "RAIN",
+      "label": "Probabilité de pluie dans l'heure",
+      "unit": "Brier",
+      "horizon_hours": 72,
+      "method": "Open-Meteo brut (moy. 6 modèles)",
+      "brier": 0.08399906424365502,
+      "n": 22323
+    }
+  ],
+  "inputs_sha256": {
+    "H_42_2000-2009.csv.gz": "8f763dee2c8e5aab63fa0ab258b803c8260b57b040ebfd3d849c7ada4c726800",
+    "H_42_2010-2019.csv.gz": "0fdfd73913e9d182501f576cc68a9f0b2dda67a5fbb225b1e4af35fe6d75c3a1",
+    "H_42_previous-2020-2024.csv.gz": "5b3a9cc92b2ef587d36712e453682d4debc115a9c9e888560f1c908aa26a89e1",
+    "H_42_latest-2025-2026.csv.gz": "714780ac91f3cf8dbf5fe1b2b67a0e7458ea83c959094f7b8520518cc62254da",
+    "nwp_archive.csv": "0ba531e1428be8679ef40635e5af99532ecaabb072aa28e3c767f2d70cc565be"
+  },
+  "script_sha256": "7321bbd65b4f95b1b7ccf0f60fd0e9879f4637e4e4196b4e4a3526446f9b245e",
+  "run_at_utc": "2026-10-22T16:52:51+00:00",
+  "versions": {
+    "python": "3.12.3",
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "sklearn": "1.9.1"
+  }
+}
