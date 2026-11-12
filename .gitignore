@@ -28,3 +28,5 @@ H_42_previous-2020-2024.csv
 
 # System installer packages (not project files)
 *.deb
+/reports/station_network/*.log
+/reports/station_network/checkpoints/

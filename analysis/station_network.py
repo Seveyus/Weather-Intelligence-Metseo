@@ -15,6 +15,7 @@ import json
 import math
 from pathlib import Path
 import platform
+import subprocess
 import time
 
 import numpy as np
@@ -341,6 +342,62 @@ def metrics(pred, y):
     return rows
 
 
+EVAL_GROUP = 60  # stations scored at once in evaluate()
+
+
+def check_frozen(selection):
+    """Refuse to evaluate if the protocol or the trained model's code changed after selection.
+
+    The protocol may only have grown by appended amendments (a prefix of the current file
+    must match the selected hash). The selected script must be a committed version whose
+    hash matches; the evaluation code itself may have changed (e.g. to fit in memory).
+    """
+    text = PROTOCOL.read_bytes()
+    cuts = [len(text)] + [i for i in range(len(text)) if text.startswith(b"\n\n**20", i)]
+    if not any(hashlib.sha256(text[:c]).hexdigest() == selection["protocol_sha256"] or
+               hashlib.sha256(text[:c] + b"\n").hexdigest() == selection["protocol_sha256"] for c in cuts):
+        raise RuntimeError("Protocol changed after selection (other than appended amendments)")
+    if sha256(Path(__file__)) == selection["script_sha256"]:
+        return "working tree"
+    relative = Path(__file__).resolve().relative_to(ROOT)
+    commits = subprocess.run(["git", "log", "--format=%H", "--", str(relative)], cwd=ROOT,
+                             capture_output=True, text=True, check=True).stdout.split()
+    for commit in commits:
+        blob = subprocess.run(["git", "show", f"{commit}:{relative}"], cwd=ROOT, capture_output=True, check=True).stdout
+        if hashlib.sha256(blob).hexdigest() == selection["script_sha256"]:
+            if subprocess.run(["git", "diff", "--quiet", commit, "--", str(relative)], cwd=ROOT).returncode:
+                print(f"Selected script is commit {commit[:7]}; evaluating with a later version", flush=True)
+            return commit
+    raise RuntimeError("The selected script is not a committed version")
+
+
+def accumulate(sums, pred, y):
+    """Add per (target, horizon) error sums for one group of stations."""
+    for j, target in enumerate(TARGETS):
+        for k, h in enumerate(HORIZONS):
+            p, o = pred[:, k, j], y[:, k, j]
+            ok = p.isfinite() & o.isfinite()
+            e = (p[ok] - o[ok]).double()
+            acc = sums.setdefault((target, h), [0, 0.0, 0.0, 0.0])
+            acc[0] += int(ok.sum()); acc[1] += float(e.sum())
+            acc[2] += float(e.abs().sum()); acc[3] += float((e ** 2).sum())
+
+
+def finish(sums):
+    """Same rows as metrics(), from summed errors."""
+    rows = []
+    for (target, h), (n, total, absolute, square) in sums.items():
+        if n == 0:
+            continue
+        row = {"target": target, "horizon_hours": h, "n": n}
+        if target == "rain":
+            row["brier"] = square / n
+        else:
+            row.update(mae=absolute / n, rmse=(square / n) ** .5, bias=total / n)
+        rows.append(row)
+    return rows
+
+
 def headline(row):
     return row["brier"] if row["target"] == "rain" else row["mae"]
 
@@ -462,36 +519,44 @@ def load_model(name, seed, device):
 
 def evaluate(args):
     selection = json.loads((OUT / "selection.json").read_text())
-    if selection["protocol_sha256"] != sha256(PROTOCOL) or selection["script_sha256"] != sha256(Path(__file__)):
-        raise RuntimeError("Protocol or script changed after selection")
+    selected_commit = check_frozen(selection)
     device, data_device = devices()
     split, meta = load_split()
     name = selection["selected_architecture"]
     models = [load_model(name, seed, device) for seed in (11, 23)]
     norm = Normalizer.__new__(Normalizer).load(models[0][1]["normalizer"], device)
     results = {}
+    method = f"Réseau {name} (2 graines)"
     for role, ids in (("test_stations", split["test"]), ("saint_etienne", [TARGET_STATION]),
                       ("train_stations", split["train"][:args.max_stations])):
-        network = Network(ids, meta, data_device, device)
-        positions = network.issue_positions(TEST_START, pd.Timestamp("2100-01-01"))
-        y = observed(network, positions)
-        preds = {f"Réseau {name} (2 graines)": torch.stack([predict(m, network, positions, norm) for m, _ in models]).mean(0),
-                 **references(network, positions)}
-        results[role] = {"stations": len(ids), "issue_times": int(len(positions)),
-                         "scores": {method: metrics(pred, y) for method, pred in preds.items()}}
-        if role == "saint_etienne":
-            frame = pd.DataFrame({"issue_time": [str(EPOCH + pd.Timedelta(hours=int(t))) for t in network.time[positions].cpu()]})
-            pred = preds[f"Réseau {name} (2 graines)"].cpu().numpy()
-            obs = y.cpu().numpy()
-            for j, target in enumerate(TARGETS):
-                for k, h in enumerate(HORIZONS):
-                    if h in (1, 3, 6, 12, 24, 72):
-                        frame[f"{target}_{h}h_pred"] = pred[:, k, j]
-                        frame[f"{target}_{h}h_obs"] = obs[:, k, j]
-            frame.to_csv(OUT / "predictions_saint_etienne.csv", index=False, float_format="%.3f")
+        # Stations are scored in groups and errors summed, so memory does not grow with the station count.
+        sums, issues = {}, 0
+        for start in range(0, len(ids), EVAL_GROUP):
+            network = Network(ids[start:start + EVAL_GROUP], meta, data_device, device)
+            positions = network.issue_positions(TEST_START, pd.Timestamp("2100-01-01"))
+            y = observed(network, positions)
+            preds = {method: torch.stack([predict(m, network, positions, norm) for m, _ in models]).mean(0),
+                     **references(network, positions)}
+            for label, pred in preds.items():
+                accumulate(sums.setdefault(label, {}), pred, y)
+            issues += len(positions)
+            if role == "saint_etienne":
+                frame = pd.DataFrame({"issue_time": [str(EPOCH + pd.Timedelta(hours=int(t))) for t in network.time[positions].cpu()]})
+                pred, obs = preds[method].cpu().numpy(), y.cpu().numpy()
+                for j, target in enumerate(TARGETS):
+                    for k, h in enumerate(HORIZONS):
+                        if h in (1, 3, 6, 12, 24, 72):
+                            frame[f"{target}_{h}h_pred"] = pred[:, k, j]
+                            frame[f"{target}_{h}h_obs"] = obs[:, k, j]
+                frame.to_csv(OUT / "predictions_saint_etienne.csv", index=False, float_format="%.3f")
+            del network, positions, y, preds
+            torch.cuda.empty_cache() if device.type == "cuda" else None
+        results[role] = {"stations": len(ids), "issue_times": issues,
+                         "scores": {label: finish(s_) for label, s_ in sums.items()}}
         print(role, len(ids), "stations evaluated", flush=True)
     (OUT / "metrics.json").write_text(json.dumps({
         "protocol_sha256": selection["protocol_sha256"], "selected_architecture": name,
+        "selected_script_commit": selected_commit, "evaluation_script_sha256": sha256(Path(__file__)),
         "evaluated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "test_period": f"issue times from {TEST_START}", "results": results,
         "versions": {"python": platform.python_version(), "torch": torch.__version__, "numpy": np.__version__},
