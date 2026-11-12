@@ -25,3 +25,6 @@ H_42_previous-2020-2024.csv
 /reports/wind_multisource/*.log
 !/reports/wind_multisource/predictions_*h.csv
 !/reports/wind_multisource/all_scores.csv
+
+# System installer packages (not project files)
+*.deb
