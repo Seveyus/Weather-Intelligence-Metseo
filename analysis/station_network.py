@@ -494,7 +494,7 @@ def select(args):
         "selected_architecture": chosen, "ensemble_validation_scores": ensemble_scores,
         "single_run_scores": by_architecture, "runs": runs, "train_issue_times": int(len(train_pos)),
         "validation_sample": int(len(val_pos)), "settings": vars(args), "device": str(device),
-        "gpu": torch.cuda.get_device_name(0) if device.type == "cuda" else None,
+        "gpu": torch.cuda.get_device_name(device) if device.type == "cuda" else None,
     }, indent=1) + "\n")
     print(f"Selected {chosen}: {ensemble_scores}", flush=True)
 

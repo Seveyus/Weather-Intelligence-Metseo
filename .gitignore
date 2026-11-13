@@ -30,3 +30,5 @@ H_42_previous-2020-2024.csv
 *.deb
 /reports/station_network/*.log
 /reports/station_network/checkpoints/
+!/reports/station_network/comparaison_mono_station.csv
+/reports/station_network/bootstrap_blocks.npz

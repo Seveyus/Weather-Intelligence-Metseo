@@ -84,12 +84,37 @@ La station 42218011 compte 24 533 heures d'émission sur la même période. Elle
 
 Le modèle qui connaît l'historique du site fait 0 à 8 % mieux, surtout pour la température et l'humidité. Le réseau, lui, n'a jamais vu Saint-Étienne et arrive presque au même niveau : c'est la situation de la station de Télécom le premier jour.
 
+## Intervalles de confiance
+
+Les intervalles sont à 95 %. Ils viennent d'un bootstrap par blocs (une station × un mois calendaire), avec 2 000 tirages ([station_bootstrap.py](../../analysis/station_bootstrap.py), [bootstrap.json](bootstrap.json)).
+
+| | Réseau MLP | Arbres groupés | Réseau − arbres |
+| --- | --- | --- | --- |
+| Score du protocole, 133 stations de test (3 910 blocs) | 0,746 [0,743 ; 0,748] | **0,733 [0,732 ; 0,735]** | +0,012 [+0,011 ; +0,014] |
+| Même score sans la pression | **0,721** | 0,735 | −0,014 [−0,015 ; −0,014] |
+| SAINT-ETIENNE (34 blocs mensuels) | **0,744 [0,732 ; 0,756]** | 0,753 [0,741 ; 0,764] | −0,009 [−0,011 ; −0,007] |
+
+**Sur les 64 cases variable × échéance des stations de test :**
+- le réseau est significativement meilleur sur **50** cases ;
+- les arbres sur **10** cases : la pression à toutes les échéances et la température à +1 h ;
+- les deux sont **indiscernables sur 4** cases, par exemple l'humidité à +1 h.
+
+Exemples d'erreurs sur les stations de test :
+
+| Variable et échéance | Réseau | Arbres | Réseau − arbres |
+| --- | --- | --- | --- |
+| Température à +6 h | 1,341 °C [1,333 ; 1,349] | 1,429 °C [1,421 ; 1,437] | −0,088 [−0,090 ; −0,086] |
+| Humidité à +6 h | 6,53 % [6,48 ; 6,57] | 6,85 % [6,80 ; 6,90] | −0,32 [−0,33 ; −0,31] |
+| Pression à +1 h | 0,521 hPa [0,507 ; 0,536] | 0,234 hPa [0,231 ; 0,238] | +0,286 [+0,274 ; +0,300] |
+
+Les écarts entre méthodes sont petits, mais tous sont réels, sauf sur les 4 cases indiscernables. Pour SAINT-ETIENNE seule, les intervalles sont environ 5 fois plus larges. Le réseau y reste devant sur 35 cases sur 56, et les arbres seulement sur 2.
+
 ## Ce qu'on peut conclure
 
 1. **Les capteurs seuls permettent une vraie prévision jusqu'à environ +12 h.** À +6 h, l'erreur est 2 à 3 fois plus petite que celle de la persistance pour la température et l'humidité, et un tiers plus petite pour le vent, les rafales et la pluie. Au-delà de 24 h, les modèles se rapprochent de la moyenne saisonnière, comme prévu sans prévision météo extérieure.
 2. **Le modèle se transpose à une station jamais vue.** Les erreurs sur les stations de test sont quasi identiques à celles des stations d'apprentissage. Par exemple, pour la température à +6 h : 1,34 °C sur les stations de test, 1,33 °C sur celles d'apprentissage. Le score sur le test (0,746 pour le réseau) est aussi proche de celui de validation (0,748). Il n'y a donc pas de surapprentissage visible.
 3. **Réseau et arbres font presque jeu égal.**
-   - Le réseau est meilleur sur 52 cases sur 64 (variable × échéance), de 1 à 5 %.
+   - Le réseau est meilleur sur 52 cases sur 64 (variable × échéance), de 1 à 5 %. L'écart est significatif pour 50 d'entre elles (voir les intervalles ci-dessus).
    - Les arbres sont nettement meilleurs pour la pression : 0,23 contre 0,52 hPa à +1 h.
    - Selon le score fixé par le protocole, les arbres l'emportent sur les stations de test (0,733 contre 0,746), uniquement à cause de la pression. Sans la pression, le réseau est devant (0,721 contre 0,735). À Saint-Étienne, le réseau est devant (0,744 contre 0,753).
 
@@ -104,7 +129,6 @@ Tous sont détaillés et datés dans la section « Amendements » du [protocole]
 
 - **Échantillon des arbres** réduit de 3 à 1 million d'heures, faute de mémoire vive et de temps. Décidé avant toute prédiction sur le test.
 - **Code d'évaluation** des réseaux puis des arbres modifié pour tenir en mémoire : calcul par groupes de stations et par tranches, avec addition des erreurs. Les modèles retenus n'ont pas changé. Avant d'évaluer, le script vérifie que le code qui les a entraînés est bien la version enregistrée dans git : commit `386557a` pour les réseaux, `ab19c2f` pour les arbres.
-- **Intervalles de confiance par bootstrap** (blocs station × mois) : prévus à titre indicatif, **pas encore calculés**.
 - **Étiquette de carte erronée** : `selection.json` indique « GTX 1650 », mais l'entraînement a bien tourné sur `cuda:1`, la RTX A5000 24 Go. L'appareil est correct ; seul le nom enregistré est faux, à cause d'une étiquette lue sur la mauvaise carte.
 
 ## Limites
@@ -121,5 +145,7 @@ python analysis/station_network.py --phase select           # environ 2 h sur un
 python analysis/station_network.py --phase evaluate
 python analysis/station_trees.py --phase select --threads 5     # environ 2 h 45 sur 8 cœurs
 python analysis/station_trees.py --phase evaluate --threads 8   # environ 11 h sur 8 cœurs, dont 10 pour les stations d'apprentissage
+python analysis/station_bootstrap.py                         # intervalles, environ 45 min
+python analysis/compare_single_station.py
 python analysis/plot_station_network.py
 ```
