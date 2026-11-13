@@ -345,7 +345,7 @@ def metrics(pred, y):
 EVAL_GROUP = 60  # stations scored at once in evaluate()
 
 
-def check_frozen(selection):
+def check_frozen(selection, script=None):
     """Refuse to evaluate if the protocol or the trained model's code changed after selection.
 
     The protocol may only have grown by appended amendments (a prefix of the current file
@@ -357,9 +357,10 @@ def check_frozen(selection):
     if not any(hashlib.sha256(text[:c]).hexdigest() == selection["protocol_sha256"] or
                hashlib.sha256(text[:c] + b"\n").hexdigest() == selection["protocol_sha256"] for c in cuts):
         raise RuntimeError("Protocol changed after selection (other than appended amendments)")
-    if sha256(Path(__file__)) == selection["script_sha256"]:
+    script = Path(script or __file__)
+    if sha256(script) == selection["script_sha256"]:
         return "working tree"
-    relative = Path(__file__).resolve().relative_to(ROOT)
+    relative = script.resolve().relative_to(ROOT)
     commits = subprocess.run(["git", "log", "--format=%H", "--", str(relative)], cwd=ROOT,
                              capture_output=True, text=True, check=True).stdout.split()
     for commit in commits:

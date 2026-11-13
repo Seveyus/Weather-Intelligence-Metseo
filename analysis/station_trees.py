@@ -145,32 +145,39 @@ def predict(bundle, X):
     return out
 
 
+def group_features(network, positions, rows=200_000):
+    """features() in slices, so the 72 h windows of a whole station group never sit in memory at once."""
+    return np.concatenate([features(network, chunk) for chunk in positions.split(rows)])
+
+
 def evaluate(threads):
     selection = json.loads(SELECTION.read_text())
-    if selection["protocol_sha256"] != net.sha256(net.PROTOCOL) or selection["script_sha256"] != net.sha256(Path(__file__)):
-        raise RuntimeError("Protocol or script changed after the trees were selected")
+    selected_commit = net.check_frozen(selection, Path(__file__))
     split, meta = net.load_split()
     bundle = joblib.load(MODELS)
     results = {}
     with threadpool_limits(limits=threads):
         for role, ids in (("test_stations", split["test"]), ("saint_etienne", [net.TARGET_STATION]),
                           ("train_stations", split["train"])):
-            preds, observed, issues = [], [], 0
+            sums, issues = {}, 0
             for chunk in groups(ids):
                 network = net.Network(chunk, meta, CPU)
                 positions = network.issue_positions(net.TEST_START, pd.Timestamp("2100-01-01"))
-                preds.append(predict(bundle, features(network, positions)))
-                observed.append(targets(network, positions))
+                pred = torch.from_numpy(predict(bundle, group_features(network, positions)))
+                net.accumulate(sums, pred, net.observed(network, positions))
                 issues += len(positions)
-            scores = net.metrics(torch.from_numpy(np.concatenate(preds)), torch.from_numpy(np.concatenate(observed)))
-            results[role] = {"stations": len(ids), "issue_times": issues, "scores": {"Arbres groupés": scores}}
-            print(role, len(ids), "stations evaluated", flush=True)
-    (net.OUT / "trees_metrics.json").write_text(json.dumps({
-        "protocol_sha256": selection["protocol_sha256"],
-        "evaluated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "test_period": f"issue times from {net.TEST_START}", "results": results,
-    }, indent=1, ensure_ascii=False) + "\n")
-    print(f"Saved {net.OUT / 'trees_metrics.json'}", flush=True)
+                del network, positions, pred
+                print(f"  {role}: {issues:,} issue times scored", flush=True)
+            results[role] = {"stations": len(ids), "issue_times": issues, "scores": {"Arbres groupés": net.finish(sums)}}
+            # Saved after each role: the training stations alone take hours on the CPU.
+            (net.OUT / "trees_metrics.json").write_text(json.dumps({
+                "protocol_sha256": selection["protocol_sha256"], "selected_script_commit": selected_commit,
+                "evaluation_script_sha256": net.sha256(Path(__file__)),
+                "evaluated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                "test_period": f"issue times from {net.TEST_START}", "complete": role == "train_stations",
+                "results": results,
+            }, indent=1, ensure_ascii=False) + "\n")
+            print(role, len(ids), "stations evaluated and saved", flush=True)
 
 
 if __name__ == "__main__":
